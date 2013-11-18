@@ -25,16 +25,23 @@
   <parent>
     <groupId>org.xwiki.commons</groupId>
     <artifactId>xwiki-commons-pom</artifactId>
-    <version>3.5.1</version>
+    <version>4.5.4</version>
   </parent>
   <groupId>org.xwiki.contrib</groupId>
   <artifactId>xwiki-batchimport</artifactId>
-  <name>XWiki Batch Import</name>
+  <name>Batch Import Parent POM</name>
   <packaging>pom</packaging>
   <version>1.1-SNAPSHOT</version>
-  <properties>
-    <xwiki.platform.version>3.5.1</xwiki.platform.version>
-  </properties>
+  <developers>
+    <developer>
+      <id>lucaa</id>
+      <name>Anca Paula Luca</name>
+    </developer>
+    <developer>
+      <id>LudovicDubost</id>
+      <name>Ludovic Dubost</name>
+    </developer>
+  </developers>
   <scm>
     <connection>scm:git:git://github.com/xwiki-contrib/batchimport.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki-contrib/batchimport.git</developerConnection>

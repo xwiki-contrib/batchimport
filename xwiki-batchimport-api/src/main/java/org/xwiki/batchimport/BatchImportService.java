@@ -129,7 +129,7 @@ public class BatchImportService implements ScriptService, BatchImport
             String attachmentRef = request.getParameter("batchimportattachmentref");
             if (!StringUtils.isEmpty(attachmentRef)) {
                 AttachmentReferenceResolver<String> refResolver =
-                    cm.lookup(AttachmentReferenceResolver.class, "current");
+                    cm.getInstance(AttachmentReferenceResolver.class, "current");
                 config.setAttachmentReference(refResolver.resolve(attachmentRef));
             }
         } catch (ComponentLookupException cle) {
@@ -381,7 +381,7 @@ public class BatchImportService implements ScriptService, BatchImport
     {
         if (this.batchImport == null) {
             try {
-                this.batchImport = cm.lookup(BatchImport.class);
+                this.batchImport = cm.getInstance(BatchImport.class);
             } catch (ComponentLookupException e) {
                 LOGGER.error("Could not find batch import implementation", e);
             }

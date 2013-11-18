@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>BatchImport</web>
-<name>Translations</name>
-<language>fr</language>
-<defaultLanguage>en</defaultLanguage>
-<translation>1</translation>
-<parent></parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1341566618000</creationDate>
-<date>1342022644000</date>
-<contentUpdateDate>1342022644000</contentUpdateDate>
-<version>1.1</version>
-<title></title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment></comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.1</syntaxId>
-<hidden>false</hidden>
-<content>## wizard ##
+  <web>BatchImport</web>
+  <name>Translations</name>
+  <language>fr</language>
+  <defaultLanguage/>
+  <translation>1</translation>
+  <parent>BatchImport.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1341566618000</creationDate>
+  <date>1342022644000</date>
+  <contentUpdateDate>1342022644000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>## wizard ##
 batchimport.import.title=Importer des données dans l''application "{0}"
 ## Step upload file ##
 batchimport.import.choosefile.title=Étape 1 : Sélection de la source
@@ -148,4 +149,5 @@ batchimport.log.errorvalidationtypedouble={0}: Erreur de validation sur la ligne
 batchimport.log.errorvalidationtypedate={0}: Erreur de validation sur la ligne {1}: La valeur "{5}" de la colonne "{4}" ne peut pas être convertie en date pour le champ "{3}" (Format accepté : {6}).
 
 batchimport.log.donepreview=Preview terminée
-</content></xwikidoc>
+</content>
+</xwikidoc>

@@ -36,14 +36,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.batchimport.BatchImport;
@@ -65,9 +67,9 @@ import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.model.reference.WikiReference;
-import org.xwiki.officeimporter.OfficeImporterException;
-import org.xwiki.officeimporter.OfficeImporterVelocityBridge;
 import org.xwiki.officeimporter.document.XDOMOfficeDocument;
+import org.xwiki.officeimporter.internal.script.OfficeImporterScriptService;
+import org.xwiki.script.service.ScriptService;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -83,7 +85,6 @@ import com.xpn.xwiki.objects.classes.ListClass;
 import com.xpn.xwiki.objects.classes.NumberClass;
 import com.xpn.xwiki.objects.classes.StringClass;
 import com.xpn.xwiki.objects.classes.TextAreaClass;
-import com.xpn.xwiki.util.Util;
 import com.xpn.xwiki.web.Utils;
 
 /**
@@ -535,7 +536,7 @@ public class DefaultBatchImport implements BatchImport
         File dirFile = new File(path);
         for (File file : dirFile.listFiles()) {
             debug("Adding file " + file.getName());
-            byte[] filedata = Util.getFileContentAsBytes(file);
+            byte[] filedata = FileUtils.readFileToByteArray(file);
             addFile(newDoc, filedata, file.getName());
         }
     }
@@ -576,7 +577,7 @@ public class DefaultBatchImport implements BatchImport
     public byte[] getFileData(ZipFile zipfile, String path) throws ZipException, IOException
     {
         if (zipfile == null) {
-            return Util.getFileContentAsBytes(new File(path));
+            return FileUtils.readFileToByteArray(new File(path));
         } else {
             String newpath = path;
             ZipEntry zipentry = zipfile.getEntry(newpath);
@@ -587,7 +588,7 @@ public class DefaultBatchImport implements BatchImport
             if (is == null) {
                 return null;
             }
-            return Util.getFileContentAsBytes(is);
+            return IOUtils.toByteArray(is);
         }
     }
 
@@ -709,7 +710,7 @@ public class DefaultBatchImport implements BatchImport
             if (datadir.endsWith(".zip")) {
                 log.log("checkingzip", datadir);
                 try {
-                    zipfile = new ZipFile(new File(datadir), "cp437");
+                    zipfile = new ZipFile(new File(datadir));
                     // TODO: what the hell is this, why are we putting it on empty?
                     datadir = "";
                 } catch (IOException e) {
@@ -719,7 +720,7 @@ public class DefaultBatchImport implements BatchImport
 
                 if (debug) {
                     @SuppressWarnings("unchecked")
-                    Enumeration<ZipEntry> zipFileEntries = zipfile.getEntries();
+                    Enumeration< ? extends ZipEntry> zipFileEntries = zipfile.entries();
                     while (zipFileEntries.hasMoreElements()) {
                         ZipEntry zipe = zipFileEntries.nextElement();
                         debug("Found zip entry: " + zipe.getName());
@@ -916,8 +917,6 @@ public class DefaultBatchImport implements BatchImport
                 }
             }
 
-            // flush the version cache for the documents to work properly after
-            xcontext.flushArchiveCache();
             return log;
         } finally {
             if (!StringUtils.isEmpty(wiki)) {
@@ -1273,8 +1272,6 @@ public class DefaultBatchImport implements BatchImport
             if (!newDoc.isNew() && overwrite == Overwrite.REPLACE && !wasAlreadySaved) {
                 if (!simulation) {
                     newDoc.delete();
-                    // flush archive cache otherwise we cannot really re-save the document after
-                    xcontext.flushArchiveCache();
                     // reload the reference so that it doesn't keep a reference to the old document
                     newDoc = xwiki.getDocument(pageName, xcontext).newDocument(xcontext);
 
@@ -1448,16 +1445,15 @@ public class DefaultBatchImport implements BatchImport
                                         boolean importResult = false;
 
                                         try {
-                                            OfficeImporterVelocityBridge officeimporter =
-                                                new OfficeImporterVelocityBridge(this.cm);
+                                            OfficeImporterScriptService officeImporter = this.cm.getInstance(ScriptService.class, "officeimporter");
                                             // import the attachment in the content of the document
                                             InputStream fileInputStream = new ByteArrayInputStream(filedata);
                                             XDOMOfficeDocument xdomOfficeDoc =
-                                                officeimporter.officeToXDOM(fileInputStream, fname, fullName, true);
+                                                officeImporter.officeToXDOM(fileInputStream, fname, fullName, true);
                                             importResult =
-                                                officeimporter.save(xdomOfficeDoc, fullName, newDoc.getSyntax()
+                                                officeImporter.save(xdomOfficeDoc, fullName, newDoc.getSyntax()
                                                     .toIdString(), null, null, true);
-                                        } catch (OfficeImporterException e) {
+                                        } catch (Exception e) {
                                             LOGGER.warn("Failed to import content from office file " + fname
                                                 + " to document " + fullName, e);
                                         }
@@ -1522,9 +1518,9 @@ public class DefaultBatchImport implements BatchImport
         BatchImportLog log;
         try {
             if (logHint != null) {
-                log = this.cm.lookup(BatchImportLog.class, logHint);
+                log = this.cm.getInstance(BatchImportLog.class, logHint);
             } else {
-                log = this.cm.lookup(BatchImportLog.class);
+                log = this.cm.getInstance(BatchImportLog.class);
             }
         } catch (ComponentLookupException e1) {
             LOGGER.warn("Could not lookup a log instance, instatiating one manually");
@@ -1545,9 +1541,9 @@ public class DefaultBatchImport implements BatchImport
     {
         String iteratorHint = config.getType();
         if (StringUtils.isEmpty(iteratorHint)) {
-            return cm.lookup(ImportFileIterator.class);
+            return cm.getInstance(ImportFileIterator.class);
         } else {
-            return cm.lookup(ImportFileIterator.class, iteratorHint);
+            return cm.getInstance(ImportFileIterator.class, iteratorHint);
         }
     }
 

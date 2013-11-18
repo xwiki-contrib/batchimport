@@ -28,7 +28,8 @@
     <version>1.1-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-batchimport-application</artifactId>
-  <name>XWiki Batch Import Application</name>
+  <name>Batch Import Application</name>
+  <description>Wizard to perform an Excel / CSV import with Batch Import API in an application created with App Within Minutes.</description>
   <packaging>xar</packaging>
   <dependencies>
     <!-- Adding batch import api as dependencies since these pages need the 
@@ -44,14 +45,14 @@
       <extension>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-handlers</artifactId>
-        <version>${xwiki.platform.version}</version>
+        <version>${commons.version}</version>
       </extension>
     </extensions>
     <plugins>
       <plugin>
         <groupId>org.xwiki.commons</groupId>
         <artifactId>xwiki-commons-tool-xar-plugin</artifactId>
-        <version>${xwiki.platform.version}</version>
+        <version>${commons.version}</version>
       </plugin>
     </plugins>
   </build>

@@ -28,7 +28,8 @@
     <version>1.1-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-batchimport-api</artifactId>
-  <name>XWiki Batch Import Server Side API</name>
+  <name>Batch Import API</name>
+  <description>Allows to import data from CSV and Excel files in XWiki structured documents.</description>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
@@ -39,25 +40,27 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-oldcore</artifactId>
-      <version>${xwiki.platform.version}</version>
+      <version>${commons.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-office-importer</artifactId>
+      <version>${commons.version}</version>
     </dependency>
     <!-- Note that these dependencies are actually dependencies of the file 
       readers, and they depend on whether one or the other of the file readers 
-      are being used, so the user of this component is responsible of adding them 
-      in the classpath on runtime depending on whether one or the other of the 
-      import types are being used. This component won't pull any. -->
+      are being used. We need to declare both in order to be able to install
+      this with the Extension Manager -->
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
       <version>2.3</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.contrib</groupId>
       <artifactId>xwiki-plugin-excel</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
+      <version>1.1</version>
     </dependency>
   </dependencies>
 </project>
