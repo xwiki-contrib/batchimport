@@ -206,5 +206,5 @@
 #set($defaultParent = "BatchImport.WebHome")
 #set($defaultSpace = 'BatchImport')
 {{/velocity}}
-{{include document="XWiki.ClassSheet"/}}</content>
+{{include reference="XWiki.ClassSheet"/}}</content>
 </xwikidoc>
