@@ -65,7 +65,9 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.officeimporter.document.XDOMOfficeDocument;
 import org.xwiki.officeimporter.internal.script.OfficeImporterScriptService;
@@ -116,6 +118,10 @@ public class DefaultBatchImport implements BatchImport
     @Inject
     @Named("current")
     protected DocumentReferenceResolver<String> currentDocumentStringResolver;
+
+    @Inject
+    @Named("current")
+    protected EntityReferenceResolver<String> currentStringResolver;
 
     @Inject
     protected EntityReferenceSerializer<String> entityReferenceSerializer;
@@ -466,14 +472,20 @@ public class DefaultBatchImport implements BatchImport
 
     protected DocumentReference prepareDocumentReference(String wiki, String space, String name)
     {
+        // prepare a space reference from the passed wiki and the passed space: resolve the space as a space reference
+        // so that we also support nested spaces.
+
+        // prepare relative wiki reference to serve as a root for the space reference
+        WikiReference docWikiReference = null;
         if (!StringUtils.isEmpty(wiki)) {
             // specified wiki, put it in there
-            return new DocumentReference(wiki, space, name);
-        } else {
-            // current wiki, build the reference relative to current wiki
-            return currentDocumentEntityReferenceResolver.resolve(new EntityReference(name, EntityType.DOCUMENT,
-                new EntityReference(space, EntityType.SPACE)));
+            docWikiReference = new WikiReference(wiki);
         }
+
+        SpaceReference docSpaceReference =
+            new SpaceReference(currentStringResolver.resolve(space, EntityType.SPACE, docWikiReference));
+
+        return new DocumentReference(name, docSpaceReference);
     }
 
     public String getFilePath(String datadir, String datadirprefix, String filename)
