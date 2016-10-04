@@ -373,11 +373,13 @@ public class DefaultBatchImport implements BatchImport
         String space = data.get("doc.space");
         if (StringUtils.isEmpty(space)) {
             space = defaultSpace;
-        }
-
-        if (clearNames) {
-            XWikiContext xcontext = getXWikiContext();
-            space = xcontext.getWiki().clearName(space, xcontext);
+        } else {
+            // clear the name of the space only if it comes from the data, not if it comes from config. If it comes from
+            // config it will have to be cleaned by the config setter
+            if (clearNames) {
+                XWikiContext xcontext = getXWikiContext();
+                space = xcontext.getWiki().clearName(space, xcontext);
+            }
         }
         return space;
     }
