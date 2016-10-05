@@ -275,6 +275,12 @@ public class BatchImportService implements ScriptService, BatchImport
                 }
             }
 
+            Property defaultDateFormatProp = configObject.getProperty("defaultdateformat");
+            String defaultDateFormat = defaultDateFormatProp != null ? (String) defaultDateFormatProp.getValue() : null;
+            if (!StringUtils.isEmpty(defaultDateFormat)) {
+                config.setDefaultDateFormat(defaultDateFormat);
+            }
+
             // TODO:
             // datafilename (datafilename: String)
             // datafileprefix (datafileprefix: String)

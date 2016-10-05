@@ -133,6 +133,11 @@
       #set($discard = $presetsObject.set('mapping', $mappingString))
       #set($madeChanges = true)
     #end
+    ## save the default date format only if different
+    #if ("$!importconfig.defaultDateFormat" != $presetsObject.getProperty('defaultdateformat').value)
+      #set($discard = $presetsObject.set('defaultdateformat', $!importconfig.defaultDateFormat))
+      #set($madeChanges = true)
+    #end
   #end
   #if($madeChanges)
     #set($discard = $doc.save("Updated presets"))
