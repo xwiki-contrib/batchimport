@@ -25,7 +25,11 @@
   <hidden>false</hidden>
   <content>{{velocity}}
 #if ("$!request.confirm" == "true" &amp;&amp; "$!request.classname" != "")
-  #set($result = $services.batchimport.deleteExistingDocuments("$!request.classname", "", $doc.space, "i18n"))
+  #set($spaceToDelete = $doc.space)
+  #if ("$!request.dataspace" != '')
+    #set($spaceToDelete = "$request.dataspace")
+  #end
+  #set($result = $services.batchimport.deleteExistingDocuments("$!request.classname", "", $spaceToDelete, "i18n"))
   #if ($result)
     {{info}}**$services.localization.render('batchimport.delete.success')**
     
@@ -54,6 +58,7 @@
   #set($spaceHome = $xwiki.getDocument($doc.space, 'WebHome'))
   #set($livetableObjInWebHome = $spaceHome.getObject('AppWithinMinutes.LiveTableClass'))
   #set($classDocument = $livetableObjInWebHome.getProperty('class').value)
+  #set($dataSpace = "$doc.space$!{livetableObjInWebHome.getProperty('dataSpace').value}")
   #if ("$!classDocument" != "")
     {{info}}$services.localization.render('batchimport.delete.confirmation.description', [$doc.space]){{/info}}
 
@@ -61,6 +66,7 @@
       &lt;form action="" method="post"&gt;
         &lt;input type="hidden" name="confirm" value="true" /&gt;
         &lt;input type="hidden" name="classname" value="$classDocument" /&gt;
+        &lt;input type="hidden" name="dataspace" value="$dataSpace" /&gt;
         &lt;div class="buttonwrapper"&gt;
           &lt;input type="submit" name="submit" value="$services.localization.render('batchimport.delete.confirmation.submit')" class="button" /&gt;
           &lt;a href="$doc.getURL('view')"&gt;$services.localization.render('batchimport.delete.confirmation.cancel', [$doc.space])&lt;/a&gt;
