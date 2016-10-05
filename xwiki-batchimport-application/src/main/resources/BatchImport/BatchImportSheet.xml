@@ -158,9 +158,10 @@
 #set($importconfig = $services.batchimport.readConfigurationFromRequest($importconfig))
 ## and put the default settings
 #set($discard = $importconfig.setHeaderRow(true))
-#set($discard = $importconfig.setDefaultSpace($doc.space))
 #set($spaceHome = $xwiki.getDocument($doc.space, 'WebHome'))
 #set($livetableObjInWebHome = $spaceHome.getObject('AppWithinMinutes.LiveTableClass'))
+#set($defaultSpace = "$doc.space$!{livetableObjInWebHome.getProperty('dataSpace').value}")
+#set($discard = $importconfig.setDefaultSpace($defaultSpace))
 #set($classDocument = $livetableObjInWebHome.getProperty('class').value)
 #set($discard = $importconfig.setMappingClassName($classDocument))
 ## try to guess the type of import by the name of the attachment
