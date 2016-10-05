@@ -44,6 +44,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </classname>
+    <clearname>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>radio</displayFormType>
+      <displayType>yesno</displayType>
+      <name>clearname</name>
+      <number>12</number>
+      <prettyName>Clear name</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </clearname>
     <datafilename>
       <disabled>0</disabled>
       <name>datafilename</name>
@@ -99,7 +113,7 @@
       <displayFormType>select</displayFormType>
       <displayType/>
       <name>fileimport</name>
-      <number>12</number>
+      <number>13</number>
       <prettyName>fileimport</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
@@ -112,7 +126,7 @@
       <displayFormType>select</displayFormType>
       <displayType/>
       <name>fileupload</name>
-      <number>11</number>
+      <number>12</number>
       <prettyName>fileupload</prettyName>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>

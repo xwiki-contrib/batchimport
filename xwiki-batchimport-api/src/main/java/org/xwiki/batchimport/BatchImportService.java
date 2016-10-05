@@ -194,6 +194,11 @@ public class BatchImportService implements ScriptService, BatchImport
             config.setListSeparator(listSeparator.charAt(0));
         }
 
+        String clearName = request.getParameter("batchimportclearname");
+        if (!StringUtils.isEmpty(clearName)) {
+            config.setClearName(Boolean.valueOf(clearName));
+        }
+
         return config;
     }
 
@@ -279,6 +284,12 @@ public class BatchImportService implements ScriptService, BatchImport
             String defaultDateFormat = defaultDateFormatProp != null ? (String) defaultDateFormatProp.getValue() : null;
             if (!StringUtils.isEmpty(defaultDateFormat)) {
                 config.setDefaultDateFormat(defaultDateFormat);
+            }
+
+            Property clearNameProp = configObject.getProperty("clearname");
+            Integer clearNamesValue = clearNameProp != null ? (Integer) clearNameProp.getValue() : null;
+            if (clearNamesValue != null) {
+                config.setClearName((clearNamesValue == 1));
             }
 
             // TODO:

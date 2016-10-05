@@ -80,6 +80,9 @@
   #if("$!config.listseparator" != "")
     &lt;input type="hidden" name="batchimportlistseparator" size="1" value="$importconfig.listSeparator"/&gt;
   #end
+  #if ($config.clearName)
+    &lt;input type="hidden" name="batchimportclearname" value="true" /&gt;
+  #end
   ## overwrite options
   #if($config.overwrite)
     &lt;input type="hidden" name="batchimportoverwrite" value="$config.overwrite" /&gt;
@@ -136,6 +139,15 @@
     ## save the default date format only if different
     #if ("$!importconfig.defaultDateFormat" != $presetsObject.getProperty('defaultdateformat').value)
       #set($discard = $presetsObject.set('defaultdateformat', $!importconfig.defaultDateFormat))
+      #set($madeChanges = true)
+    #end
+    ## save the clear name option only if not matching
+    #if (($importconfig.clearName &amp;&amp; $presetsObject.getProperty('clearname').value != 1) || (!$importconfig.clearName &amp;&amp; $presetsObject.getProperty('clearname').value == 1))
+      #set($clearNameValue = 0)
+      #if ($importconfig.clearName)
+        #set($clearNameValue = 1)
+      #end
+      #set($discard = $presetsObject.set('clearname', $clearNameValue))
       #set($madeChanges = true)
     #end
   #end
@@ -225,6 +237,10 @@
       {{/html}})))
     (((
       {{html clean="false" wiki="true"}}
+        {{info}}$services.localization.render('batchimport.import.mapping.clearname.description'){{/info}}
+
+        $services.localization.render('batchimport.import.mapping.clearname'): &lt;input type="checkbox" name="batchimportclearname" value="true" #if($importconfig.clearName)checked="checked" #end /&gt;&lt;input type="hidden" name="batchimportclearname" value="false" /&gt;
+
         {{info}}$services.localization.render('batchimport.import.mapping.localelanguage.description'){{/info}}
 
         $services.localization.render('batchimport.import.mapping.localelanguage'): &lt;input type="text" name="batchimportlocalelanguage" size="2" value="$!importconfig.locale.language"/&gt;

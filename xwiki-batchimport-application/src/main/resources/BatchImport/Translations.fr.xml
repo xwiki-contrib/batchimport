@@ -54,6 +54,8 @@ batchimport.import.mapping.defaultdateformat.description=Par défaut le format u
 batchimport.import.mapping.defaultdateformat=Format des dates
 batchimport.import.mapping.listseparator.description=Si vous utilisez un champ de type "liste" dans l'application avec l'option "choix multiple", le séparateur à utiliser dans la source est par défaut une virgule (,). Si vous en utilisez un autre dans la source, veuillez remplir le champ ci-dessous.
 batchimport.import.mapping.listseparator=Séparateur de liste
+batchimport.import.mapping.clearname.description=Défini si les valeurs trouvées dans le fichier et utilisées pour les noms d'espace et de documents doivent être nettoyées avant usage: les espacements sont supprimés et les caractères spéciaux aussi. Cochez cette case si des caractères pouvant casser les URL de documents (par exemple des barres obliques, antislash, etc.) peuvent apparaître dans les valeurs des colonnes choisies pour les noms de documents et d'espaces. Notez que, si cette option est choisie, les options de déduplication des prochaines étapes utiliseront les noms nettoyés.
+batchimport.import.mapping.clearname=Nettoyage des noms
 batchimport.import.mapping.previous=Redéfinir la source
 batchimport.import.mapping.next=Tester les associations
 ## Step mapping preview ##

@@ -54,6 +54,8 @@ batchimport.import.mapping.defaultdateformat.description=By default, if a column
 batchimport.import.mapping.defaultdateformat=Default date format
 batchimport.import.mapping.listseparator.description=If a file column is mapped on an application field of type list with "multiple select" checked, the import system will try to interpret the value in the field as a potential list of values rather than a single value. The splitting of the value will be done using this character as ennumeration separator. By default, it is ',' (comma).
 batchimport.import.mapping.listseparator=List separator
+batchimport.import.mapping.clearname.description=Whether the values found in the file that are used for space and document names should be cleaned before being used: whitespaces are removed and special characters as well. Check this box if characters that might break the document URLs (e.g. slashes, backslashes, pluses, etc) might appear in the values of the columns chosen for document names and document spaces. Note that, if this option is chosen, the deduplication options of the next steps apply to the cleaned names.
+batchimport.import.mapping.clearname=Clean names
 batchimport.import.mapping.previous=Change file
 batchimport.import.mapping.next=Preview mapping
 ## Step mapping preview ##
