@@ -353,7 +353,7 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
      */
     public String getEmptyDocNamePrefix()
     {
-        return (String) this.get("emptydocdameprefix");
+        return (String) this.get("emptydocnameprefix");
     }
 
     /**
@@ -363,7 +363,7 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
      */
     public void setEmptyDocNamePrefix(String docNamePrefix)
     {
-        this.put("emptydocdameprefix", docNamePrefix);
+        this.put("emptydocnameprefix", docNamePrefix);
     }
 
     /**
