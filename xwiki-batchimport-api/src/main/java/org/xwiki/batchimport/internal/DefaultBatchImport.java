@@ -411,7 +411,7 @@ public class DefaultBatchImport implements BatchImport
             if (ignoreEmpty) {
                 return null;
             } else {
-                name = defaultPrefix + rowIndex;
+                name = defaultPrefix + (config.getEmptyDocNameOffset() + rowIndex);
             }
         }
 

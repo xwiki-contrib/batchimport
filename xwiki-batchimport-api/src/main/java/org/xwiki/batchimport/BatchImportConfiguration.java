@@ -367,6 +367,35 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
     }
 
     /**
+     * @return the numeric offset to be used for creating page names for rows for which the mapping to doc.name is an
+     *         empty value (or there is no mapping). This value is used only if {@link #getEmptyDocNamePrefix()} is set.
+     *         The name of the page is created as the empty doc name prefix plus the row index of the row being
+     *         processed. This numeric offset will be added to the row index before being padded to the empty doc name
+     *         prefix. The value is 0 by default, unless otherwise set.
+     */
+    public long getEmptyDocNameOffset()
+    {
+        Object emptyDocNameOffset = this.get("emptydocnameoffset");
+        if (emptyDocNameOffset == null) {
+            return 0;
+        } else {
+            return (Long) emptyDocNameOffset;
+        }
+    }
+
+    /**
+     * @param offset the numeric offset to be used for creating page names for rows for which the mapping to doc.name is
+     *            an empty value (or there is no mapping). This value is used only if {@link #getEmptyDocNamePrefix()}
+     *            is set. The name of the page is created as the empty doc name prefix plus the row index of the row
+     *            being processed. This numeric offset will be added to the row index before being padded to the empty
+     *            doc name prefix.
+     */
+    public void setEmptyDocNameOffset(long offset)
+    {
+        this.put("emptydocnameoffset", offset);
+    }
+
+    /**
      * @return the default date format, to be used if the columns in the source file mapped to a field of type date in
      *         the xwiki class cannot be formatted using the format set in the field in xwiki.
      * @see {@link SimpleDateFormat}
