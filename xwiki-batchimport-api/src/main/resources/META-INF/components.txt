@@ -4,3 +4,5 @@ org.xwiki.batchimport.internal.iterators.CSVImportFileIterator
 org.xwiki.batchimport.internal.iterators.ExcelImportFileIterator
 org.xwiki.batchimport.internal.log.StringBatchImportLog
 org.xwiki.batchimport.internal.log.I18nStringBatchImportLog
+org.xwiki.batchimport.internal.ConstantsRowDataPostprocessor
+org.xwiki.batchimport.internal.RowIndexRowDataPostprocessor

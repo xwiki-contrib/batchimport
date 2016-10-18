@@ -29,6 +29,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -50,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.batchimport.BatchImport;
 import org.xwiki.batchimport.BatchImportConfiguration;
+import org.xwiki.batchimport.RowDataPostprocessor;
 import org.xwiki.batchimport.BatchImportConfiguration.Overwrite;
 import org.xwiki.batchimport.ImportFileIterator;
 import org.xwiki.batchimport.MappingPreviewResult;
@@ -250,6 +253,14 @@ public class DefaultBatchImport implements BatchImport
         // document. Note that for multiple imports from the same document, this list should be identical.
         List<DocumentReference> docNameList = new ArrayList<DocumentReference>();
 
+        // prepare the list of data postprocessors that are available
+        List<RowDataPostprocessor> dataProcessors;
+        try {
+            dataProcessors = this.getRowDataPostprocessors();
+        } catch (ComponentLookupException e) {
+            throw new XWikiException(0, 0, "Could not fetch data postprocessors for the batch import", e);
+        }
+
         // the previewed rows: processed and validated
         List<Map<String, Object>> previewRows = new LinkedList<Map<String, Object>>();
 
@@ -278,6 +289,12 @@ public class DefaultBatchImport implements BatchImport
             }
 
             Map<String, String> data = getData(currentLine, mapping, headers);
+
+            // postprocess the data with visitors (all registered visitors). The order of the visitors is the one of the
+            // priorities
+            for (RowDataPostprocessor proc : dataProcessors) {
+                proc.postProcessRow(data, currentLine, rowIndex, mapping, headers, config);
+            }
 
             // generate page name
             DocumentReference generatedDocName = getPageName(data, rowIndex, config, docNameList);
@@ -713,6 +730,14 @@ public class DefaultBatchImport implements BatchImport
         // should not "skip" but "update").
         List<DocumentReference> savedDocuments = new ArrayList<DocumentReference>();
 
+        // prepare the list of data postprocessors that are available
+        List<RowDataPostprocessor> dataProcessors;
+        try {
+            dataProcessors = this.getRowDataPostprocessors();
+        } catch (ComponentLookupException e) {
+            throw new XWikiException(0, 0, "Could not fetch data postprocessors for the batch import", e);
+        }
+
         ZipFile zipfile = null;
         if (!fileupload || StringUtils.isEmpty(datadir)) {
             withFiles = false;
@@ -781,6 +806,12 @@ public class DefaultBatchImport implements BatchImport
             }
 
             debug("Row " + currentLine.toString() + " data is: " + data.toString() + "");
+            // postprocess the data with visitors (all registered visitors). The order of the visitors is the one of the
+            // priorities
+            for (RowDataPostprocessor proc : dataProcessors) {
+                proc.postProcessRow(data, currentLine, rowIndex, mapping, headers, config);
+            }
+            debug("Row " + currentLine.toString() + " data (after postprocessing) is: " + data.toString() + "");
             // generate page name
             DocumentReference generatedDocName = getPageName(data, rowIndex, config, docNameList);
             // process the row
@@ -1559,6 +1590,20 @@ public class DefaultBatchImport implements BatchImport
         } else {
             return cm.getInstance(ImportFileIterator.class, iteratorHint);
         }
+    }
+
+    protected List<RowDataPostprocessor> getRowDataPostprocessors() throws ComponentLookupException
+    {
+        List<RowDataPostprocessor> allProcessors = cm.getInstanceList(RowDataPostprocessor.class);
+        Collections.sort(allProcessors, new Comparator<RowDataPostprocessor>()
+        {
+            @Override
+            public int compare(RowDataPostprocessor o1, RowDataPostprocessor o2)
+            {
+                return (int) Math.signum(o1.getPriority() - o2.getPriority());
+            }
+        });
+        return allProcessors;
     }
 
     protected XWikiContext getXWikiContext()
