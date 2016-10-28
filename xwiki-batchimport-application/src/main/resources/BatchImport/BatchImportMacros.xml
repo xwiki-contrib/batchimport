@@ -163,7 +163,7 @@
 
   ## upload form for files
   {{html clean="false"}}
-    &lt;form method="post" enctype="multipart/form-data" action="$doc.getURL('upload')" /&gt;
+    &lt;form method="post" enctype="multipart/form-data" action="$doc.getURL('upload')"&gt;
       &lt;input type="hidden" value="$!{services.csrf.getToken()}" name="form_token" /&gt;
       &lt;input type="hidden" value="$doc.getURL('view', "sheet=$escapetool.url('BatchImport.BatchImportSheet')&amp;ref=upload")" name="xredirect" /&gt;
       &lt;label for="batchimportfileupload"&gt;$services.localization.render('batchimport.import.choosefile.fileupload'): &lt;/label&gt;
