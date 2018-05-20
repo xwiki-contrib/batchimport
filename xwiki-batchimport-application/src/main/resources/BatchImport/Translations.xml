@@ -22,7 +22,7 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>plain/1.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden>true</hidden>
   <content>## wizard ##
 batchimport.import.title=Import data in application "{0}"
 ## Step upload file ##
