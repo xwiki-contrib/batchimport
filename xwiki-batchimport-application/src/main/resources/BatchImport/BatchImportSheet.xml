@@ -16,7 +16,7 @@
   <contentUpdateDate>1342018983000</contentUpdateDate>
   <version>1.1</version>
   <template/>
-  <title>$services.localization.render('batchimport.import.title', [$doc.space])</title>
+  <title/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -160,10 +160,12 @@
 #set($discard = $importconfig.setHeaderRow(true))
 #set($spaceHome = $xwiki.getDocument($doc.space, 'WebHome'))
 #set($livetableObjInWebHome = $spaceHome.getObject('AppWithinMinutes.LiveTableClass'))
-#set($defaultSpace = "$doc.space$!{livetableObjInWebHome.getProperty('dataSpace').value}")
-#set($discard = $importconfig.setDefaultSpace($defaultSpace))
-#set($classDocument = $livetableObjInWebHome.getProperty('class').value)
-#set($discard = $importconfig.setMappingClassName($classDocument))
+#if ($livetableObjInWebHome != $NULL)
+  #set($defaultSpace = "$doc.space$!{livetableObjInWebHome.getProperty('dataSpace').value}")
+  #set($discard = $importconfig.setDefaultSpace($defaultSpace))
+  #set($classDocument = $livetableObjInWebHome.getProperty('class').value)
+  #set($discard = $importconfig.setMappingClassName($classDocument))
+#end
 ## try to guess the type of import by the name of the attachment
 #if($services.model.serialize($importconfig.attachmentReference).endsWith(".xls"))
   #set($discard = $importconfig.setType('xls'))

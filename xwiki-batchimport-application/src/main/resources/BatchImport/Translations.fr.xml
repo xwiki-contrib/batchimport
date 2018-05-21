@@ -151,5 +151,11 @@ batchimport.log.errorvalidationtypedouble={0}: Erreur de validation sur la ligne
 batchimport.log.errorvalidationtypedate={0}: Erreur de validation sur la ligne {1}: La valeur "{5}" de la colonne "{4}" ne peut pas être convertie en date pour le champ "{3}" (Format accepté : {6}).
 
 batchimport.log.donepreview=Preview terminée
-</content>
+
+## livetable ##
+batchimport.livetable.doc.title=Page
+batchimport.livetable.doc.location=Emplacement
+batchimport.livetable.doc.date=Dernière modification
+batchimport.livetable.doc.author=Auteur
+batchimport.livetable._actions=Actions</content>
 </xwikidoc>

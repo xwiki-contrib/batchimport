@@ -150,7 +150,14 @@ batchimport.log.errorvalidationtypefloat=Line {0}: Validation error on row {1}: 
 batchimport.log.errorvalidationtypedouble=Line {0}: Validation error on row {1}: cannot convert value "{5}" on column "{4}" to double for field "{3}" (incorrect format or value out of range).
 batchimport.log.errorvalidationtypedate=Line {0}: Validation error on row {1}: cannot convert value "{5}" on column "{4}" to date for field "{3}" (accepted format is {6}).
 
-batchimport.log.donepreview=Generating mapping preview finished.</content>
+batchimport.log.donepreview=Generating mapping preview finished.
+
+## livetable ##
+batchimport.livetable.doc.title=Page
+batchimport.livetable.doc.location=Location
+batchimport.livetable.doc.date=Last modification
+batchimport.livetable.doc.author=Author
+batchimport.livetable._actions=Actions</content>
   <object>
     <name>BatchImport.Translations</name>
     <number>0</number>

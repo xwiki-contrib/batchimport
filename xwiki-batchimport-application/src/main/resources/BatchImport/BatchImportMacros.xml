@@ -165,7 +165,10 @@
   {{html clean="false"}}
     &lt;form method="post" enctype="multipart/form-data" action="$doc.getURL('upload')"&gt;
       &lt;input type="hidden" value="$!{services.csrf.getToken()}" name="form_token" /&gt;
-      &lt;input type="hidden" value="$doc.getURL('view', "sheet=$escapetool.url('BatchImport.BatchImportSheet')&amp;ref=upload")" name="xredirect" /&gt;
+      #if ("$!request.sheet" != '')
+        #set($sheetParam = "sheet=$!escapetool.url($request.sheet)")
+      #end
+      &lt;input type="hidden" value="$doc.getURL('view', "$!sheetParam&amp;ref=upload")" name="xredirect" /&gt;
       &lt;label for="batchimportfileupload"&gt;$services.localization.render('batchimport.import.choosefile.fileupload'): &lt;/label&gt;
       &lt;input type="file" class="uploadFileInput" size="40" value="" name="filepath" id="batchimportfileupload"&gt;
       &lt;span class="buttonwrapper"&gt;&lt;input type="submit" class="button" value="$services.localization.render('batchimport.import.choosefile.uploadfile')"&gt;&lt;/span&gt;
