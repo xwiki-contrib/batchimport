@@ -212,6 +212,22 @@
   {{/html}}
 #end
 
+#*
+ * Displays the select for a mapped field
+ *#
+#macro(displayMappingSelect $columnsList $fieldName $currentValue)
+  #set($foundCurrentValue = false)
+  &lt;select name="$escapetool.xml($fieldName)"&gt;
+    &lt;option value=""&gt;$services.localization.render('batchimport.import.mapping.none')&lt;/option&gt;
+    #foreach($column in $columnsList)
+      &lt;option name="$column" value="$column" #if($currentValue == $column)selected="selected"#set($foundCurrentValue = true)#{end}&gt;$column&lt;/option&gt;
+    #end
+    #if (!$foundCurrentValue)
+      &lt;option name="$escapetool.xml($currentValue)" value="$escapetool.xml($currentValue)" selected="selected"&gt;$currentValue&lt;/option&gt;
+    #end
+  &lt;/select&gt;
+#end
+
 #macro(displayColumnMapping)
   == $services.localization.render('batchimport.import.mapping.title') ==
 
@@ -228,13 +244,13 @@
     {{container layoutStyle="columns"}}
     ((({{html clean="false" wiki="true"}}
         |=  $services.localization.render('batchimport.import.mapping.fields', [$doc.space]) |= $services.localization.render('batchimport.import.mapping.columns')
-        | $services.localization.render('batchimport.import.mapping.doc.name') | &lt;select name="batchimportmapping_doc.name"&gt;&lt;option value=""&gt;$services.localization.render('batchimport.import.mapping.none')&lt;/option&gt;#foreach($column in $columnsList)&lt;option name="$column" value="$column" #if("$!importconfig.fieldsMapping.get('doc.name')" == $column)selected="selected"#end&gt;$column&lt;/option&gt;#end&lt;/select&gt;
+        | $services.localization.render('batchimport.import.mapping.doc.name') | #displayMappingSelect($columnsList, "batchimportmapping_doc.name", "$!importconfig.fieldsMapping.get('doc.name')")
         #foreach($prop in $applicationClass.properties)
-          | $prop.prettyName | &lt;select name="batchimportmapping_${prop.name}"&gt;&lt;option value=""&gt;$services.localization.render('batchimport.import.mapping.none')&lt;/option&gt;#foreach($column in $columnsList)&lt;option name="$column" value="$column" #if("$!importconfig.fieldsMapping.get($prop.name)" == $column)selected="selected"#end&gt;$column&lt;/option&gt;#end&lt;/select&gt;
+          | $prop.prettyName | #displayMappingSelect($columnsList, "batchimportmapping_${prop.name}", "$!importconfig.fieldsMapping.get($prop.name)")
         #end
         #foreach($standardField in $fieldsToMap)
           #if($standardField != 'doc.name')
-            | $services.localization.render("batchimport.import.mapping.${standardField}") | &lt;select name="batchimportmapping_${standardField}"&gt;&lt;option value=""&gt;$services.localization.render('batchimport.import.mapping.none')&lt;/option&gt;#foreach($column in $columnsList)&lt;option name="$column" value="$column" #if("$!importconfig.fieldsMapping.get($standardField)" == $column)selected="selected"#end&gt;$column&lt;/option&gt;#end&lt;/select&gt;
+            | $services.localization.render("batchimport.import.mapping.${standardField}") | #displayMappingSelect($columnsList, "batchimportmapping_${standardField}", "$!importconfig.fieldsMapping.get($standardField)")
           #end
         #end
       {{/html}})))
