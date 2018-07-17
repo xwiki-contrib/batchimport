@@ -302,8 +302,16 @@
   #if($result)
     #set($applicationClass = $xwiki.getClass($importconfig.mappingClassName))
     ## we need the stupid template here since we cannot get displayed pretty name otherwise (we need an object or protected API)
-    #set($applicationTemplate = $xwiki.getDocument("${importconfig.mappingClassName.substring(0, $importconfig.mappingClassName.indexOf('Class'))}Template"))
-    #set($applicationTemplateObject = $applicationTemplate.getObject($importconfig.mappingClassName)) 
+    #set($classPrefixIndex = $importconfig.mappingClassName.indexOf('Class'))
+    #if($classPrefixIndex &lt; 0)
+      #set($classPrefixIndex = $importconfig.mappingClassName.length())
+    #end
+    #set($applicationTemplate = $xwiki.getDocument("${importconfig.mappingClassName.substring(0, $classPrefixIndex)}Template"))
+    #if ($xwiki.exists($applicationTemplate))
+      #set($applicationTemplateObject = $applicationTemplate.getObject($importconfig.mappingClassName))
+    #else
+      #set($applicationTemplateObject = $xwiki.getDocument('cfw235dg3.sdfg54w63').newObject($importconfig.mappingClassName))
+    #end
     #set($mappedProperties = $importconfig.fieldsMapping.keySet())
     ## table head: all class properties which are mapped along with all standard properties which are mapped. Before all, built document reference
     |= |=$services.localization.render('batchimport.import.mapping.doc.reference')#foreach($prop in $applicationClass.properties)#if($mappedProperties.contains($prop.name))|=$applicationTemplate.displayPrettyName($prop.name, $applicationTemplateObject)#end#end#foreach($standardProp in $fieldsToMap)#if($standardProp != "doc.name" &amp;&amp; $mappedProperties.contains($standardProp))|=$services.localization.render("batchimport.import.mapping.${standardProp}")#end#end
