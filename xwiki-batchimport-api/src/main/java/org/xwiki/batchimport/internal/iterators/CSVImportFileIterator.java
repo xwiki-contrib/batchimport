@@ -36,8 +36,9 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.AttachmentReference;
 
-import au.com.bytecode.opencsv.CSVReader;
-
+import com.opencsv.CSVReader;
+import com.opencsv.ICSVParser;
+import com.opencsv.RFC4180ParserBuilder;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiAttachment;
@@ -80,7 +81,9 @@ public class CSVImportFileIterator implements ImportFileIterator
 
         // prepare the new reader from the passed config and store it
         InputStreamReader sourceInputStream = getSourceInputStream(config, getXWikiContext());
-        this.reader = new CSVReader(sourceInputStream, config.getCsvSeparator(), config.getCsvTextDelimiter());
+        ICSVParser csvParser = new RFC4180ParserBuilder().withQuoteChar(config.getCsvTextDelimiter())
+            .withSeparator(config.getCsvSeparator()).build();
+        this.reader = new CSVReader(sourceInputStream, 0, csvParser);
     }
 
     @Override
@@ -126,8 +129,8 @@ public class CSVImportFileIterator implements ImportFileIterator
             }
 
         } else {
-            throw new IOException("Could not read csv file, no source file configured in the batch import config: "
-                + config.toString());
+            throw new IOException(
+                "Could not read csv file, no source file configured in the batch import config: " + config.toString());
         }
 
         return new InputStreamReader(inputStream, config.getEncoding());
