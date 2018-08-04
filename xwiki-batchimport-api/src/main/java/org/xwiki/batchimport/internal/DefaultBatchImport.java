@@ -73,7 +73,7 @@ import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.officeimporter.document.XDOMOfficeDocument;
-import org.xwiki.officeimporter.internal.script.OfficeImporterScriptService;
+import org.xwiki.officeimporter.script.OfficeImporterScriptService;
 import org.xwiki.script.service.ScriptService;
 
 import com.xpn.xwiki.XWiki;
