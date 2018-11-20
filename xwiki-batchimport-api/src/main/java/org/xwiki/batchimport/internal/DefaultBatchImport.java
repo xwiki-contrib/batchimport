@@ -96,7 +96,7 @@ import com.xpn.xwiki.web.Utils;
  * Default Batch import implementation, uses {@link ImportFileIterator}s to process the files to import, according to
  * the {@link BatchImportConfiguration#getType()} setting. If you need to import from a new format, register a new
  * {@link ImportFileIterator} implementation with a hint which you then pass in the {@link BatchImportConfiguration}.
- * 
+ *
  * @version $Id$
  */
 @Component
@@ -138,7 +138,7 @@ public class DefaultBatchImport implements BatchImport
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.xwiki.batchimport.BatchImport#getColumnHeaders(org.xwiki.batchimport.BatchImportConfiguration)
      */
     @Override
@@ -454,7 +454,7 @@ public class DefaultBatchImport implements BatchImport
 
     /**
      * Deduplicate page name amongst the documents that are on the same wiki.
-     * 
+     *
      * @return the potentially deduplicated page name, according to the parameters in the config. Note that it can also
      *         return the very same {@code pageName} parameter.
      */
@@ -669,13 +669,14 @@ public class DefaultBatchImport implements BatchImport
         // -------------------- Not transformed to config yet, will not work ---------------------//
         Document doc = new Document(xcontext.getDoc(), xcontext);
         // attach files referred in the column _file to the document
-        boolean fileupload =
-            (Integer) doc.getValue("fileupload") == null || ((Integer) doc.getValue("fileupload")).equals(0) ? false
-                : true;
+        boolean fileupload = getBooleanValue(doc, "fileupload", false);
+
         // use office importer to import the content from the column _file to the document content
-        boolean fileimport =
-            (Integer) doc.getValue("fileimport") == null || ((Integer) doc.getValue("fileimport")).equals(0) ? false
-                : true;
+        boolean fileimport = getBooleanValue(doc, "fileimport", false);
+
+        // use office importer to import the content from the column _file to the document content
+        boolean filterstyles = getBooleanValue(doc, "filterstyles", true);
+
         // directory or zip file where the referenced files are stored. Directory on disk.
         String datadir = (String) doc.getValue("datafilename");
         // path of the files inside the zip
@@ -851,7 +852,7 @@ public class DefaultBatchImport implements BatchImport
                                     // besides skip
                                     saveDocumentWithFiles(newDoc, data, currentLine, rowIndex, config, xcontext,
                                         config.getOverwrite() != Overwrite.SKIP, simulation, overwritefile, fileimport,
-                                        datadir, datadirprefix, zipfile, savedDocuments, log);
+                                        datadir, datadirprefix, zipfile, filterstyles, savedDocuments, log);
                                 } else {
                                     // ... or just save it: no files handling it, we save it here manually
                                     String serializedPageName = entityReferenceSerializer.serialize(pageName);
@@ -1019,7 +1020,7 @@ public class DefaultBatchImport implements BatchImport
 
     /**
      * Validate that an object can be created in this document, to prevent continuing if it's not the case.
-     * 
+     *
      * @throws XWikiException
      */
     public boolean validateCanCreateObject(Document newDoc, int rowIndex, List<String> currentLine,
@@ -1423,7 +1424,8 @@ public class DefaultBatchImport implements BatchImport
     public void saveDocumentWithFiles(Document newDoc, Map<String, String> data, List<String> currentLine,
         int rowIndex, BatchImportConfiguration config, XWikiContext xcontext, boolean overwrite, boolean simulation,
         boolean overwritefile, boolean fileimport, String datadir, String datadirprefix, ZipFile zipfile,
-        List<DocumentReference> savedDocuments, BatchImportLog log) throws XWikiException, ZipException, IOException
+        boolean filterstyles, List<DocumentReference> savedDocuments, BatchImportLog log) throws XWikiException,
+            ZipException, IOException
     {
         String fullName = newDoc.getPrefixedFullName();
 
@@ -1494,7 +1496,7 @@ public class DefaultBatchImport implements BatchImport
                                             // import the attachment in the content of the document
                                             InputStream fileInputStream = new ByteArrayInputStream(filedata);
                                             XDOMOfficeDocument xdomOfficeDoc =
-                                                officeImporter.officeToXDOM(fileInputStream, fname, fullName, true);
+                                                officeImporter.officeToXDOM(fileInputStream, fname, fullName, filterstyles);
                                             importResult =
                                                 officeImporter.save(xdomOfficeDoc, fullName, newDoc.getSyntax()
                                                     .toIdString(), null, null, true);
@@ -1553,7 +1555,7 @@ public class DefaultBatchImport implements BatchImport
 
     /**
      * Prepares a log to put result in.
-     * 
+     *
      * @param logHint the hint of the log that needs to be used
      * @return the built log, looked up with the hint. If a logger cannot be looked up with the hint, a new instance is
      *         created of type {@link StringBatchImportLog}, so that we can properly fallback on some implementation.
@@ -1568,7 +1570,7 @@ public class DefaultBatchImport implements BatchImport
                 log = this.cm.getInstance(BatchImportLog.class);
             }
         } catch (ComponentLookupException e1) {
-            LOGGER.warn("Could not lookup a log instance, instatiating one manually");
+            LOGGER.warn("Could not lookup a log instance, instantiating one manually");
             log = new StringBatchImportLog();
         }
         if (this.log) {
@@ -1611,5 +1613,13 @@ public class DefaultBatchImport implements BatchImport
         ExecutionContext ec = execution.getContext();
         XWikiContext xwikicontext = (XWikiContext) ec.getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
         return xwikicontext;
+    }
+
+    public static boolean getBooleanValue(Document doc, String propertyName, boolean defaultValue) {
+        Integer value = (Integer) doc.getValue(propertyName);
+        if (value == null) {
+            return defaultValue;
+        }
+        return value.equals(0) ? false : true;
     }
 }
