@@ -740,7 +740,9 @@ public class DefaultBatchImport implements BatchImport
         }
 
         ZipFile zipfile = null;
-        if (!fileupload || StringUtils.isEmpty(datadir)) {
+        // "withFiles" is true when there are input files that need to be read. This is the case when either
+        // "fileupload" or "fileimport" is true.
+        if ((!fileimport && !fileupload) || StringUtils.isEmpty(datadir)) {
             withFiles = false;
         }
 
@@ -852,7 +854,7 @@ public class DefaultBatchImport implements BatchImport
                                     // besides skip
                                     saveDocumentWithFiles(newDoc, data, currentLine, rowIndex, config, xcontext,
                                         config.getOverwrite() != Overwrite.SKIP, simulation, overwritefile, fileimport,
-                                        datadir, datadirprefix, zipfile, filterstyles, savedDocuments, log);
+                                        fileupload, datadir, datadirprefix, zipfile, filterstyles, savedDocuments, log);
                                 } else {
                                     // ... or just save it: no files handling it, we save it here manually
                                     String serializedPageName = entityReferenceSerializer.serialize(pageName);
@@ -1423,7 +1425,7 @@ public class DefaultBatchImport implements BatchImport
 
     public void saveDocumentWithFiles(Document newDoc, Map<String, String> data, List<String> currentLine,
         int rowIndex, BatchImportConfiguration config, XWikiContext xcontext, boolean overwrite, boolean simulation,
-        boolean overwritefile, boolean fileimport, String datadir, String datadirprefix, ZipFile zipfile,
+        boolean overwritefile, boolean fileimport, boolean fileupload, String datadir, String datadirprefix, ZipFile zipfile,
         boolean filterstyles, List<DocumentReference> savedDocuments, BatchImportLog log) throws XWikiException,
             ZipException, IOException
     {
@@ -1451,9 +1453,9 @@ public class DefaultBatchImport implements BatchImport
                     log.logSave("simimportfileok", rowIndex, currentLine, fullName, path);
                     savedDocuments.add(newDoc.getDocumentReference());
                 } else {
-                    // adding the file to the document
                     String fname = getFileName(data.get("doc.file"));
-                    if (newDoc.getAttachment(fname) != null) {
+                    // adding the file to the document only if fileupload is true
+                    if (fileupload && newDoc.getAttachment(fname) != null) {
                         debug("Filename " + fname + " already exists in " + fullName);
 
                         // done here
@@ -1465,7 +1467,7 @@ public class DefaultBatchImport implements BatchImport
                         log.logSave("importduplicateattach", rowIndex, currentLine, fullName, path);
                     } else {
                         boolean isDirectory = isDirectory(zipfile, path);
-                        if (isDirectory) {
+                        if (fileupload && isDirectory) {
                             addFiles(newDoc, path);
 
                             // done here, we save pointed files in the file and we're done
@@ -1475,7 +1477,9 @@ public class DefaultBatchImport implements BatchImport
                         } else {
                             byte[] filedata = getFileData(zipfile, path);
                             if (filedata != null) {
-                                addFile(newDoc, filedata, fname);
+                                if (fileupload) {
+                                    addFile(newDoc, filedata, fname);
+                                }
                                 // TODO: why the hell are we doing this here?
                                 if (overwrite && overwritefile) {
                                     newDoc.setContent("");
