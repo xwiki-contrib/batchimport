@@ -57,5 +57,6 @@
   <modules>
     <module>xwiki-batchimport-api</module>
     <module>xwiki-batchimport-application</module>
+    <module>xwiki-batchimport-postprocessors</module>
   </modules>
 </project>
