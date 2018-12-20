@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.xwiki.contrib</groupId>
     <artifactId>xwiki-batchimport</artifactId>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.1</version>
   </parent>
   <artifactId>xwiki-batchimport-application</artifactId>
   <name>Batch Import Application</name>
