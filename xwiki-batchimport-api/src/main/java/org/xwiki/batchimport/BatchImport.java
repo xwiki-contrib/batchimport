@@ -63,7 +63,6 @@ public interface BatchImport
      * @param withFiles
      * @param overwritefile
      * @param simulation
-     * @param convertToUpperCase
      * @return
      * @throws IOException
      * @throws XWikiException

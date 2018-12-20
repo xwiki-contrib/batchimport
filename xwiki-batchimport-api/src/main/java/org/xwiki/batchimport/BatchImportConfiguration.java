@@ -64,7 +64,7 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
          */
         UPDATE,
         /**
-         * Replace the old document with the new one, that is, clear object, attachments, etc. <br />
+         * Replace the old document with the new one, that is, clear object, attachments, etc. <br>
          * Does not apply as document name deduplication strategy, as it would mean the same thing as {@link #UPDATE},
          * actually the setter is converting it to {@link #UPDATE}.
          */
@@ -72,7 +72,7 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
         /**
          * Auto-generate a new document name every time an existing name is found. As doc name deduplication strategy,
          * this will generate the same names for subsequent imports of the same file, as overwrite option, this will
-         * generate different names for subsequent imports, depending on the actual data on the wiki.<br />
+         * generate different names for subsequent imports, depending on the actual data on the wiki.<br>
          */
         GENERATE_NEW;
     }
@@ -172,7 +172,7 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
      *         interpreted depending on the result of {@link #hasHeaderRow()}: if it has header row, the source file
      *         column name will be the name of the column in the header row, otherwise it should be a string containing
      *         the number of the column, to be parsed as integer. This is so that columns mappings can be reused for
-     *         multiple imports, regardless of whether the columns order change or not. <br />
+     *         multiple imports, regardless of whether the columns order change or not. <br>
      *         There are a few special mapping fields, to configure mapping for various document metadata:
      *         <ul>
      *         <li>doc.name : the name of the page (URL of the page in the space)</li>
@@ -181,9 +181,9 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
      *         <li>doc.parent : parent field</li>
      *         <li>doc.content : the content of the page. Something useful is in the source file to set a column named
      *         "content" and put in that column "{{include document='CODESpace.MyClassSheet'}}".</li>
-     *         <li>doc.file : declares a list of files attached to the page</li> </li>
+     *         <li>doc.file : declares a list of files attached to the page</li>
      *         <li>doc.tags : declares a list of columns (or a single multiple values column) to be marshaled to an
-     *         XWikiTags object. TODO: implement with this name</li> </li>
+     *         XWikiTags object. TODO: implement with this name</li>
      *         </ul>
      *         <b>Note that this function returns a clone of the mapping, so putting directly in the map returned by
      *         this function will not alter the configuration's mapping. Use {@link #addAllFieldsMapping(Map)} and
@@ -396,9 +396,9 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
     }
 
     /**
+     * @see SimpleDateFormat
      * @return the default date format, to be used if the columns in the source file mapped to a field of type date in
      *         the xwiki class cannot be formatted using the format set in the field in xwiki.
-     * @see {@link SimpleDateFormat}
      */
     public String getDefaultDateFormat()
     {
@@ -406,9 +406,9 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
     }
 
     /**
+     * @see SimpleDateFormat
      * @param defaultDateFormat the default date format, to be used if the columns in the source file mapped to a field
      *            of type date in the xwiki class cannot be formatted using the format set in the field in xwiki.
-     * @see {@link SimpleDateFormat}
      */
     public void setDefaultDateFormat(String defaultDateFormat)
     {

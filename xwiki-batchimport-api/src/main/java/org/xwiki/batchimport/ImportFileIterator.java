@@ -25,15 +25,15 @@ import java.util.List;
 import org.xwiki.component.annotation.ComponentRole;
 
 /**
- * Iterator through an import file. <br />
+ * Iterator through an import file. <br>
  * Note that this is designed to be a stateful component, one call to {@link #resetFile(BatchImportConfiguration)}
  * should "start" the read of a file and the subsequent {@link #readNextLine()} calls should give one by one the lines
- * of the file, until the end, when they would return null. <br />
+ * of the file, until the end, when they would return null. <br>
  * It is recommended that the implementations of this interface have a perlookup instantiation strategy, as every
  * stateful component should. Normally this should use the factory pattern, but I want to make it as simple as possible
  * to implement in groovy, which is why I don't make it a factory. To extend this in groovy, you'd just need to provide
  * an iterator with a new hint, which can start reading a file in the {@link #resetFile(BatchImportConfiguration)} and
- * provides it line by line in {@link #readNextLine()} <br />
+ * provides it line by line in {@link #readNextLine()} <br>
  * <b>NOT THREAD SAFE!</b>
  * 
  * @version $Id$

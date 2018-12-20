@@ -90,7 +90,7 @@ public class BatchImportService implements ScriptService, BatchImport
      *         <li><tt>batchimporthasheader</tt> for {@link BatchImportConfiguration#hasHeaderRow()}</li>
      *         <li><tt>batchimportmappingclass</tt> for {@link BatchImportConfiguration#getMappingClassName()}</li>
      *         <li><tt>batchimportmapping_&lt;fieldname&gt;</tt> for all field configurations in
-     *         {@link BatchImportConfiguration#getFieldsMapping()}.</li> *
+     *         {@link BatchImportConfiguration#getFieldsMapping()}.</li>
      *         <li><tt>batchimportdefaultspace</tt> for {@link BatchImportConfiguration#getDefaultSpace()}</li>
      *         <li><tt>batchimportemptydocnameprefix</tt> for {@link BatchImportConfiguration#getEmptyDocNamePrefix()}</li>
      *         <li><tt>batchimportlocalelanguage</tt> for {@link BatchImportConfiguration#setLocale(String)}</li>
@@ -98,7 +98,7 @@ public class BatchImportService implements ScriptService, BatchImport
      *         <li><tt>batchimportoverwrite</tt> for {@link BatchImportConfiguration#getOverwrite()}</li>
      *         <li><tt>batchimportdocnamededuplication</tt> for
      *         {@link BatchImportConfiguration#getDocNameDeduplication()}</li>
-     *         <li><tt>batchimportlistseparator</tt> for {@link BatchImportConfiguration#getListSeparator()</li>
+     *         <li><tt>batchimportlistseparator</tt> for {@link BatchImportConfiguration#getListSeparator()}</li>
      *         </ul>
      *         TODO: this method misses some parameters of the config (that might or might not be passable as request
      *         parameters).
