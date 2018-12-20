@@ -31,7 +31,7 @@
   <artifactId>xwiki-batchimport</artifactId>
   <name>Batch Import Parent POM</name>
   <packaging>pom</packaging>
-  <version>2.0.1-SNAPSHOT</version>
+  <version>2.1</version>
 
   <properties>
     <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
@@ -52,7 +52,7 @@
     <connection>scm:git:git://github.com/xwiki-contrib/batchimport.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki-contrib/batchimport.git</developerConnection>
     <url>https://github.com/xwiki-contrib/batchimport/tree/master</url>
-    <tag>HEAD</tag>
+    <tag>xwiki-batchimport-2.1</tag>
   </scm>
   <modules>
     <module>xwiki-batchimport-api</module>
