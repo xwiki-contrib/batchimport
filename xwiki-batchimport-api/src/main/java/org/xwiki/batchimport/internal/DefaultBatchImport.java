@@ -412,7 +412,6 @@ public class DefaultBatchImport implements BatchImport
     {
         // pagename prefix used to automatically generate page names, when _name is not provided
         String defaultPrefix = config.getEmptyDocNamePrefix();
-        boolean ignoreEmpty = StringUtils.isEmpty(defaultPrefix);
         // the default space to add pages in
         String defaultSpace = config.getDefaultSpace();
         // whether values in column doc.name should be passed through clearName before
@@ -425,8 +424,10 @@ public class DefaultBatchImport implements BatchImport
 
         String name = data.get("doc.name");
         if (StringUtils.isEmpty(name)) {
-            if (ignoreEmpty) {
-                return null;
+            if (StringUtils.isEmpty(defaultPrefix)) {
+                XWikiContext xcontext = getXWikiContext();
+                return prepareDocumentReference(wiki, space,
+                    xcontext.getWiki().getXWikiPreference("xwiki.defaultpage", "WebHome", xcontext));
             } else {
                 name = defaultPrefix + (config.getEmptyDocNameOffset() + rowIndex);
             }
