@@ -1348,7 +1348,7 @@ public class DefaultBatchImport implements BatchImport
                 if (!key.startsWith("doc.")) {
                     PropertyInterface prop = defaultClass.get(key);
 
-                    if (!StringUtils.isEmpty(stringValue) || overwrite == Overwrite.UPDATE_EVEN_WHEN_EMPTY_INPUT) {
+                    if (value != null && (!StringUtils.isEmpty(stringValue) || overwrite == Overwrite.UPDATE_EVEN_WHEN_EMPTY_INPUT_CELL)) {
                         boolean addtotags = false;
 
                         if (fieldsfortags.contains(key) || fieldsfortags.contains("ALL")) {
