@@ -381,7 +381,7 @@
 
     {{html clean="false" wiki="false"}}
     &lt;ul&gt;
-    #foreach($choice in ["SKIP", "UPDATE", "UPDATE_EVEN_WHEN_EMPTY_INPUT_CELL", "REPLACE", "GENERATE_NEW"])
+    #foreach($choice in ["SKIP", "UPDATE", "REPLACE", "GENERATE_NEW"])
       &lt;li&gt;&lt;input type="radio" name="batchimportoverwrite" value="$choice" #if("$!importconfig.overwrite" == $choice)checked="checked"#end&gt;$services.localization.render("batchimport.import.overwrite.option.${choice.toLowerCase()}")&lt;/input&gt;&lt;/li&gt;
     #end
     &lt;/ul&gt;
