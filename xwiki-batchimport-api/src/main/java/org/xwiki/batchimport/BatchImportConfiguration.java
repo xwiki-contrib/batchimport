@@ -528,4 +528,16 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
             this.setLocale(new Locale(language, country));
         }
     }
+
+    public boolean getHonorEmptyValues()
+    {
+        Boolean honorEmptyValues = (Boolean) this.get("honoremptyvalues");
+
+        return honorEmptyValues == null ? false : honorEmptyValues;
+    }
+
+    public void setHonorEmptyValues(boolean honorEmptyValues)
+    {
+        this.put("honoremptyvalues", honorEmptyValues);
+    }
 }

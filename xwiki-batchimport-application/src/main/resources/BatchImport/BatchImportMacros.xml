@@ -103,6 +103,9 @@
   #if ($config.clearName)
     &lt;input type="hidden" name="batchimportclearname" value="true" /&gt;
   #end
+  #if ($config.honorEmptyValues)
+    &lt;input type="hidden" name="batchimporthonoremptyvalues" value="true" /&gt;
+  #end
   ## overwrite options
   #if($config.overwrite)
     &lt;input type="hidden" name="batchimportoverwrite" value="$config.overwrite" /&gt;
@@ -168,6 +171,15 @@
         #set($clearNameValue = 1)
       #end
       #set($discard = $presetsObject.set('clearname', $clearNameValue))
+      #set($madeChanges = true)
+    #end
+    ## save the honor empty values option only if not matching
+    #if (($importconfig.honorEmptyValues &amp;&amp; $presetsObject.getProperty('honoremptyvalues').value != 1) || (!$importconfig.honorEmptyValues &amp;&amp; $presetsObject.getProperty('honoremptyvalues').value == 1))
+      #set($honorEmptyValues = 0)
+      #if ($importconfig.honorEmptyValues)
+        #set($honorEmptyValues = 1)
+      #end
+      #set($discard = $presetsObject.set('honoremptyvalues', $honorEmptyValues))
       #set($madeChanges = true)
     #end
   #end
@@ -291,7 +303,11 @@
         {{info}}$services.localization.render('batchimport.import.mapping.listseparator.description'){{/info}}
 
         $services.localization.render('batchimport.import.mapping.listseparator'): &lt;input type="text" name="batchimportlistseparator" size="1" value="$importconfig.listSeparator"/&gt;
-      {{/html}}
+
+        {{info}}$services.localization.render('batchimport.import.mapping.honoremptyvalues.description'){{/info}}
+
+        $services.localization.render('batchimport.import.mapping.honoremptyvalues'): &lt;input type="checkbox" name="batchimporthonoremptyvalues" value="true" #if($importconfig.honorEmptyValues)checked="checked" #end /&gt;&lt;input type="hidden" name="batchimporthonoremptyvalues" value="false" /&gt;
+        {{/html}}
     )))
     {{/container}}
   #else

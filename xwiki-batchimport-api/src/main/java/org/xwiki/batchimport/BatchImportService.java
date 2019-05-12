@@ -199,6 +199,11 @@ public class BatchImportService implements ScriptService, BatchImport
             config.setClearName(Boolean.valueOf(clearName));
         }
 
+        String honorEmptyValues = request.getParameter("batchimporthonoremptyvalues");
+        if (!StringUtils.isEmpty(honorEmptyValues)) {
+            config.setHonorEmptyValues(Boolean.valueOf(honorEmptyValues));
+        }
+
         return config;
     }
 
@@ -290,6 +295,12 @@ public class BatchImportService implements ScriptService, BatchImport
             Integer clearNamesValue = clearNameProp != null ? (Integer) clearNameProp.getValue() : null;
             if (clearNamesValue != null) {
                 config.setClearName((clearNamesValue == 1));
+            }
+
+            Property honorEmptyValuesProp = configObject.getProperty("honoremptyvalues");
+            Integer honorEmptyValues = honorEmptyValuesProp != null ? (Integer) honorEmptyValuesProp.getValue() : null;
+            if (honorEmptyValues != null) {
+                config.setHonorEmptyValues(honorEmptyValues == 1);
             }
 
             // TODO:
