@@ -43,6 +43,6 @@
         </dependency>
     </dependencies>
     <modules>
-        <module>dblistidentifier</module>
+        <module>listidentifier</module>
     </modules>
 </project>

@@ -27,7 +27,7 @@
         <artifactId>xwiki-batchimport-postprocessors</artifactId>
         <version>2.3-SNAPSHOT</version>
     </parent>
-    <artifactId>xwiki-batchimport-postprocessors-dblistidentifier</artifactId>
-    <name>Batch import database list identifier post-processor</name>
+    <artifactId>xwiki-batchimport-postprocessors-listidentifier</artifactId>
+    <name>Batch import list identifier post-processor</name>
     <packaging>jar</packaging>
 </project>

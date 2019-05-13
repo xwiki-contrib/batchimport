@@ -42,21 +42,20 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.PropertyInterface;
 import com.xpn.xwiki.objects.classes.BaseClass;
-import com.xpn.xwiki.objects.classes.DBListClass;
 import com.xpn.xwiki.objects.classes.ListClass;
 import com.xpn.xwiki.objects.classes.ListItem;
 import com.xpn.xwiki.objects.classes.PropertyClass;
 import com.xpn.xwiki.objects.classes.StaticListClass;
 
 /**
- * Identifies values of DBLists of the configured class and transforms the received value in stored value. Initialized
+ * Identifies values of Lists of the configured class and transforms the received value in stored value. Initialized
  * per lookup so that we can add some cache of the values.
  *
  * @version $Id$
  */
-@Component("dblistidentifier")
+@Component("listidentifier")
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
-public class DBListIdentifierPostprocessor implements RowDataPostprocessor
+public class ListIdentifierPostprocessor implements RowDataPostprocessor
 {
 
     @Inject
@@ -94,18 +93,19 @@ public class DBListIdentifierPostprocessor implements RowDataPostprocessor
                 PropertyInterface pi = mappedClass.get(xwikiField);
                 if (pi instanceof PropertyClass) {
                     PropertyClass prop = (PropertyClass) pi;
-                    if (prop instanceof DBListClass) {
+                    if (prop instanceof ListClass) {
                         logger
                                 .debug("Found column mapped to " + pi.getName()
-                                        + " which is a dblist, reverse mapping...");
-                        Map<String, String> values = getValuesForProperty(mappedClass, (DBListClass) prop);
+                                        + " which is a list, reverse mapping...");
+                        Map<String, String> values = getValuesForProperty(mappedClass, (ListClass) prop);
                         // find the value corresponding to the current value in the file
                         String dataInFile = data.get(xwikiField);
                         logger.debug("Value to reverse map: " + dataInFile);
                         // split with separator
                         List<String> dataToStore = new ArrayList<>();
                         for (String v : StringUtils.split(dataInFile, config.getListSeparator())) {
-                            String valueToAdd = values.get(v);
+                            String valueToAdd = lookupKey(values, v, prop);
+
                             if (StringUtils.isNotBlank(valueToAdd)) {
                                 dataToStore.add(valueToAdd);
                             } else {
@@ -126,9 +126,24 @@ public class DBListIdentifierPostprocessor implements RowDataPostprocessor
 
             }
         } catch (XWikiException e) {
-            logger.warn("Exception while post processing dblists for mapping " + mapping + " and config " + config
+            logger.warn("Exception while post processing lists for mapping " + mapping + " and config " + config
                     + " for row " + rowIndex, e);
         }
+    }
+
+    protected String lookupKey(Map<String, String> keyByValueMap, String value, PropertyClass prop) {
+        String key = keyByValueMap.get(value);
+
+        if (StringUtils.isBlank(key) && prop instanceof StaticListClass) {
+            // For static lists, case insensitive trimmed value retrieval is attempted
+            // if no key is found for the value as is.
+            for (Map.Entry<String, String> entry : keyByValueMap.entrySet()) {
+                if (entry.getKey().compareToIgnoreCase(value.trim()) == 0) {
+                    key = entry.getValue();
+                }
+            }
+        }
+        return key;
     }
 
     /**
