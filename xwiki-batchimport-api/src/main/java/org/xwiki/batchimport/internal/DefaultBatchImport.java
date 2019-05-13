@@ -1343,8 +1343,6 @@ public class DefaultBatchImport implements BatchImport
             for (String key : mapping.keySet()) {
                 Object value = parsedRow.get(key);
                 String stringValue = data.get(key);
-                // TODO: implement proper handling of empty values, for now the test if value is empty is done only for
-                // object properties, but not for document metadata. This needs to depend on a parameter.
                 if (!key.startsWith("doc.")) {
                     PropertyInterface prop = defaultClass.get(key);
 
@@ -1358,13 +1356,7 @@ public class DefaultBatchImport implements BatchImport
                             // make this check, although value should really be instanceof List at this point since it
                             // was properly prepared by the parseAndValidatePageData function
                             if (addtotags && value instanceof List) {
-                                for (Object item: (List)value) {
-                                    // Never add an empty tag whatever is the parameter value 'honor empty values' as it
-                                    // makes no sense to add an empty tag
-                                    if (item != null && StringUtils.isEmpty(item.toString())) {
-                                        tagList.add(item.toString());
-                                    }
-                                }
+                                tagList.addAll((List) value);
                             }
                             newDocObj.set(key, value);
                         } else if (prop instanceof BooleanClass && value instanceof Boolean) {
@@ -1375,14 +1367,13 @@ public class DefaultBatchImport implements BatchImport
                             } else {
                                 newDocObj.set(key, 0);
                             }
-                            // Whatever the 'honor empty values' parameter is, it never makes sense to add an empty tag
-                            if (addtotags && !StringUtils.isEmpty(stringValue)) {
+                            if (addtotags) {
                                 tagList.add(stringValue);
                             }
                         } else {
                             newDocObj.set(key, value);
 
-                            if (addtotags && !StringUtils.isEmpty(stringValue)) {
+                            if (addtotags) {
                                 tagList.add(stringValue);
                             }
                         }
@@ -1407,18 +1398,16 @@ public class DefaultBatchImport implements BatchImport
             }
 
             // set tags, only if needed.
-            // NB: we consider that the tags have to be replaced, not added to possibly existing ones, just like
-            // what happens with the other multi-valued properties.
-            if (tagList.size() > 0) {
+            // TODO: fix this test here, it should depend on an "empty overwrites" parameter, which should say whether
+            // an empty value is considered significant or not, which should also apply to properties: for now we
+            // overwrite it even with an empty tagList, if the fields for tags is set to something and that something is
+            // void, maybe we shouldn't
+            if (fieldsfortags != null && fieldsfortags.size() > 0) {
                 com.xpn.xwiki.api.Object newTagsObject = newDoc.getObject("XWiki.TagClass");
                 if (newTagsObject == null) {
                     newTagsObject = newDoc.newObject("XWiki.TagClass");
                 }
                 newTagsObject.set("tags", tagList);
-            } else if (config.getHonorEmptyValues()) {
-                // If the list of tags is empty and the import should honor empty values, then remove
-                // any existing TagClass (otherwise, leave the tags as they are).
-                newDoc.removeObjects("XWiki.TagClass");
             }
 
             // set a parent if a parent is empty after import
