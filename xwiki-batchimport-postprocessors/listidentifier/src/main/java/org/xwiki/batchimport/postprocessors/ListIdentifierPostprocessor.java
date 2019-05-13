@@ -108,6 +108,12 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
 
                             if (StringUtils.isNotBlank(valueToAdd)) {
                                 dataToStore.add(valueToAdd);
+                            } else {
+                                // The value was not found in the values map, but it might simply be a key,
+                                // so we keep it as is.
+                                // TODO: in case the key does not exist in the available DBList keys, the user
+                                // should get warned they might be importing inconsistent data.
+                                dataToStore.add(v);
                             }
                         }
                         // TODO: should escape the list separator, somehow, or call this function once the list parsing
