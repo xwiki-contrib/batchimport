@@ -424,11 +424,21 @@ public class DefaultBatchImport implements BatchImport
 
         String name = data.get("doc.name");
         if (StringUtils.isEmpty(name)) {
+            // if the document name is empty in the file...
             if (StringUtils.isEmpty(defaultPrefix)) {
-                XWikiContext xcontext = getXWikiContext();
-                return prepareDocumentReference(wiki, space,
-                    xcontext.getWiki().getXWikiPreference("xwiki.defaultpage", "WebHome", xcontext));
+                // ... if there is no prefix to generate a document name, the name remains empty, figure out what to do
+                if (StringUtils.isEmpty(data.get("doc.space"))) {
+                    // if there is no explicit space mapped either for this line, ignore the line, there is no data on
+                    // the line to make a reference from it (probably an empty line at the end of an excel?)
+                    return null;
+                } else {
+                    // if there is an explicit space, most probably the intention is to create a non-terminal page, use
+                    // the WebHome name for the document
+                    XWikiContext xcontext = getXWikiContext();
+                    name = xcontext.getWiki().getXWikiPreference("xwiki.defaultpage", "WebHome", xcontext);
+                }
             } else {
+                // ... if there is a prefix to generate a document name, prepare it from the offset and rowIndex
                 name = defaultPrefix + (config.getEmptyDocNameOffset() + rowIndex);
             }
         }
