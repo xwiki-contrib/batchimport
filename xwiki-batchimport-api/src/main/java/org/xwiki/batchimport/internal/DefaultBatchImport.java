@@ -1343,12 +1343,10 @@ public class DefaultBatchImport implements BatchImport
             for (String key : mapping.keySet()) {
                 Object value = parsedRow.get(key);
                 String stringValue = data.get(key);
-                // TODO: implement proper handling of empty values, for now the test if value is empty is done only for
-                // object properties, but not for document metadata. This needs to depend on a parameter.
                 if (!key.startsWith("doc.")) {
                     PropertyInterface prop = defaultClass.get(key);
 
-                    if (value != null && (!StringUtils.isEmpty(stringValue) || overwrite == Overwrite.UPDATE_EVEN_WHEN_EMPTY_INPUT_CELL)) {
+                    if (!StringUtils.isEmpty(stringValue) || config.getHonorEmptyValues()) {
                         boolean addtotags = false;
 
                         if (fieldsfortags.contains(key) || fieldsfortags.contains("ALL")) {
@@ -1383,11 +1381,19 @@ public class DefaultBatchImport implements BatchImport
                 } else if (key.equals("doc.file")) {
                     // ignore, will be handled by the file function
                 } else if (key.equals("doc.title")) {
-                    newDoc.setTitle((String) value);
+                    // Override the title only if the provided value is not empty or if the import should honor empty
+                    // cells
+                    if (!StringUtils.isEmpty(stringValue) || config.getHonorEmptyValues()) {
+                        newDoc.setTitle((String) value);
+                    }
                 } else if (key.equals("doc.parent")) {
-                    newDoc.setParent((String) value);
+                    if (!StringUtils.isEmpty(stringValue) || config.getHonorEmptyValues()) {
+                        newDoc.setParent((String) value);
+                    }
                 } else if (key.equals("doc.content")) {
-                    newDoc.setContent((String) value);
+                    if (!StringUtils.isEmpty(stringValue) || config.getHonorEmptyValues()) {
+                        newDoc.setContent((String) value);
+                    }
                 }
             }
 
@@ -1406,7 +1412,7 @@ public class DefaultBatchImport implements BatchImport
 
             // set a parent if a parent is empty after import
             // TODO: make this a config parameter
-            if (StringUtils.isEmpty(newDoc.getParent())) {
+            if (StringUtils.isEmpty(newDoc.getParent()) && !config.getHonorEmptyValues()) {
                 // to the webHome of its space
                 newDoc.setParent("WebHome");
             }

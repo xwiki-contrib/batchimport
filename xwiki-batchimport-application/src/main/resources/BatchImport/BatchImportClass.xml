@@ -166,6 +166,21 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </filterstyles>
+    <honoremptyvalues>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>select</displayFormType>
+      <displayType/>
+      <hint/>
+      <name>honoremptyvalues</name>
+      <number>15</number>
+      <prettyName>Honor empty values</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </honoremptyvalues>
     <listseparator>
       <disabled>0</disabled>
       <name>listseparator</name>

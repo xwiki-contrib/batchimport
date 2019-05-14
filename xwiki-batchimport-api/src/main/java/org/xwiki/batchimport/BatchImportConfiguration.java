@@ -64,11 +64,6 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
          */
         UPDATE,
         /**
-         * While with the {@link #UPDATE} option, the import will skip the empty values, this option makes it possible
-         * that empty cells replace existing values.
-         */
-        UPDATE_EVEN_WHEN_EMPTY_INPUT_CELL,
-        /**
          * Replace the old document with the new one, that is, clear object, attachments, etc. <br>
          * Does not apply as document name deduplication strategy, as it would mean the same thing as {@link #UPDATE},
          * actually the setter is converting it to {@link #UPDATE}.
@@ -532,5 +527,17 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
         if (!StringUtils.isEmpty(language) && !StringUtils.isEmpty(country)) {
             this.setLocale(new Locale(language, country));
         }
+    }
+
+    public boolean getHonorEmptyValues()
+    {
+        Boolean honorEmptyValues = (Boolean) this.get("honoremptyvalues");
+
+        return honorEmptyValues == null ? false : honorEmptyValues;
+    }
+
+    public void setHonorEmptyValues(boolean honorEmptyValues)
+    {
+        this.put("honoremptyvalues", honorEmptyValues);
     }
 }
