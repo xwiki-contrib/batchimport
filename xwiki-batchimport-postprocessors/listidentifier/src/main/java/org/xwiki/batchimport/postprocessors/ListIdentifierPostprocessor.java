@@ -98,29 +98,31 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
                                 .debug("Found column mapped to " + pi.getName()
                                         + " which is a list, reverse mapping...");
                         Map<String, String> values = getValuesForProperty(mappedClass, (ListClass) prop);
-                        // find the value corresponding to the current value in the file
-                        String dataInFile = data.get(xwikiField);
-                        logger.debug("Value to reverse map: " + dataInFile);
-                        // split with separator
-                        List<String> dataToStore = new ArrayList<>();
-                        for (String v : StringUtils.split(dataInFile, config.getListSeparator())) {
-                            String valueToAdd = lookupKey(values, v, prop);
+                        // find the value corresponding to the current value in the data map
+                        String value = data.get(xwikiField);
+                        logger.debug("Value to reverse map: " + value);
+                        if (StringUtils.isNotEmpty(value)) {
+                            // split with separator
+                            List<String> dataToStore = new ArrayList<>();
+                            for (String v : StringUtils.split(value, config.getListSeparator())) {
+                                String valueToAdd = lookupKey(values, v, prop);
 
-                            if (StringUtils.isNotBlank(valueToAdd)) {
-                                dataToStore.add(valueToAdd);
-                            } else {
-                                // The value was not found in the values map, but it might simply be a key,
-                                // so we keep it as is.
-                                // TODO: in case the key does not exist in the available DBList keys, the user
-                                // should get warned they might be importing inconsistent data.
-                                dataToStore.add(v);
+                                if (StringUtils.isNotBlank(valueToAdd)) {
+                                    dataToStore.add(valueToAdd);
+                                } else {
+                                    // The value was not found in the values map, but it might simply be a key,
+                                    // so we keep it as is.
+                                    // TODO: in case the key does not exist in the available DBList keys, the user
+                                    // should get warned they might be importing inconsistent data.
+                                    dataToStore.add(v);
+                                }
                             }
+                            // TODO: should escape the list separator, somehow, or call this function once the list parsing
+                            // was done...
+                            String valueToStore = StringUtils.join(dataToStore, config.getListSeparator());
+                            logger.debug("Value reverse mapped to: " + valueToStore);
+                            data.put(xwikiField, valueToStore);
                         }
-                        // TODO: should escape the list separator, somehow, or call this function once the list parsing
-                        // was done...
-                        String valueToStore = StringUtils.join(dataToStore, config.getListSeparator());
-                        logger.debug("Value reverse mapped to: " + valueToStore);
-                        data.put(xwikiField, valueToStore);
                     }
                 }
 
