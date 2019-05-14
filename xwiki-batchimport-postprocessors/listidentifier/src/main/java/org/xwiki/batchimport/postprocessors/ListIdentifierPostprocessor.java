@@ -48,8 +48,8 @@ import com.xpn.xwiki.objects.classes.PropertyClass;
 import com.xpn.xwiki.objects.classes.StaticListClass;
 
 /**
- * Identifies values of Lists of the configured class and transforms the received value in stored value. Initialized
- * per lookup so that we can add some cache of the values.
+ * Identifies values of Lists of the configured class and transforms the received value in stored value. Initialized per
+ * lookup so that we can add some cache of the values.
  *
  * @version $Id$
  */
@@ -81,7 +81,7 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
      */
     @Override
     public void postProcessRow(Map<String, String> data, List<String> row, int rowIndex, Map<String, String> mapping,
-            List<String> headers, BatchImportConfiguration config)
+        List<String> headers, BatchImportConfiguration config)
     {
         try {
             String classReference = config.getMappingClassName();
@@ -94,9 +94,7 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
                 if (pi instanceof PropertyClass) {
                     PropertyClass prop = (PropertyClass) pi;
                     if (prop instanceof ListClass) {
-                        logger
-                                .debug("Found column mapped to " + pi.getName()
-                                        + " which is a list, reverse mapping...");
+                        logger.debug("Found column mapped to " + pi.getName() + " which is a list, reverse mapping...");
                         Map<String, String> values = getValuesForProperty(mappedClass, (ListClass) prop);
                         // find the value corresponding to the current value in the data map
                         String value = data.get(xwikiField);
@@ -107,18 +105,14 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
                             for (String v : StringUtils.split(value, config.getListSeparator())) {
                                 String valueToAdd = lookupKey(values, v, prop);
 
-                                if (StringUtils.isNotBlank(valueToAdd)) {
-                                    dataToStore.add(valueToAdd);
-                                } else {
-                                    // The value was not found in the values map, but it might simply be a key,
-                                    // so we keep it as is.
-                                    // TODO: in case the key does not exist in the available DBList keys, the user
-                                    // should get warned they might be importing inconsistent data.
-                                    dataToStore.add(v);
-                                }
+                                // If the value is not found in the values map, it might simply be a key, we'll keep it
+                                // as is, if it's found we add the value
+                                // TODO: in case the key does not exist in the available DBList keys, the user
+                                // should get warned they might be importing inconsistent data.
+                                dataToStore.add(StringUtils.isNotBlank(valueToAdd) ? valueToAdd : v);
                             }
-                            // TODO: should escape the list separator, somehow, or call this function once the list parsing
-                            // was done...
+                            // TODO: should escape the list separator, somehow, or call this function once the list
+                            // parsing was done...
                             String valueToStore = StringUtils.join(dataToStore, config.getListSeparator());
                             logger.debug("Value reverse mapped to: " + valueToStore);
                             data.put(xwikiField, valueToStore);
@@ -129,11 +123,12 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
             }
         } catch (XWikiException e) {
             logger.warn("Exception while post processing lists for mapping " + mapping + " and config " + config
-                    + " for row " + rowIndex, e);
+                + " for row " + rowIndex, e);
         }
     }
 
-    protected String lookupKey(Map<String, String> keyByValueMap, String value, PropertyClass prop) {
+    protected String lookupKey(Map<String, String> keyByValueMap, String value, PropertyClass prop)
+    {
         String key = keyByValueMap.get(value);
 
         if (StringUtils.isBlank(key) && prop instanceof StaticListClass) {
