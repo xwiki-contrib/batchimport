@@ -30,4 +30,8 @@
     <artifactId>xwiki-batchimport-postprocessors-listidentifier</artifactId>
     <name>Batch import list identifier post-processor</name>
     <packaging>jar</packaging>
+    <properties>
+      <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
+      <xwiki.extension.features>org.xwiki.contrib:xwiki-batchimport-postprocessors-dblistidentifier</xwiki.extension.features>
+    </properties>
 </project>

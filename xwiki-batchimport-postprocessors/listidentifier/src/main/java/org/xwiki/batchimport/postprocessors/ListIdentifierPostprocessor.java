@@ -105,11 +105,18 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
                             for (String v : StringUtils.split(value, config.getListSeparator())) {
                                 String valueToAdd = lookupKey(values, v, prop);
 
-                                // If the value is not found in the values map, it might simply be a key, we'll keep it
-                                // as is, if it's found we add the value
-                                // TODO: in case the key does not exist in the available DBList keys, the user
-                                // should get warned they might be importing inconsistent data.
-                                dataToStore.add(StringUtils.isNotBlank(valueToAdd) ? valueToAdd : v);
+                                if (StringUtils.isNotBlank(valueToAdd)) {
+                                    logger.debug("Value found in the list values: " + valueToAdd);
+                                    dataToStore.add(valueToAdd);
+                                } else {
+                                    // The value was not found in the values map, but it might simply be a key,
+                                    // so we keep it as is.
+                                    // TODO: in case the key does not exist in the available DBList keys, the user
+                                    // should get warned they might be importing inconsistent data.
+                                    logger.debug(
+                                        "Value not found in the list values, using the original value from file: " + v);
+                                    dataToStore.add(v);
+                                }
                             }
                             // TODO: should escape the list separator, somehow, or call this function once the list
                             // parsing was done...
