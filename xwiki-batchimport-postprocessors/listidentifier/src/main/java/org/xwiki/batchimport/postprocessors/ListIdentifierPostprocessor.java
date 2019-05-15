@@ -106,15 +106,17 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
                                 String valueToAdd = lookupKey(values, v, prop);
 
                                 if (StringUtils.isNotBlank(valueToAdd)) {
-                                    logger.debug("Value found in the list values: " + valueToAdd);
+                                    logger.debug("Reverse mapping " + pi.getName()
+                                        + ": value found in the list values: " + valueToAdd);
                                     dataToStore.add(valueToAdd);
                                 } else {
                                     // The value was not found in the values map, but it might simply be a key,
                                     // so we keep it as is.
                                     // TODO: in case the key does not exist in the available DBList keys, the user
                                     // should get warned they might be importing inconsistent data.
-                                    logger.debug(
-                                        "Value not found in the list values, using the original value from file: " + v);
+                                    logger.debug("Reverse mapping " + pi.getName()
+                                        + ": value not found in the list values, using the original value from file: "
+                                        + v);
                                     dataToStore.add(v);
                                 }
                             }
