@@ -97,12 +97,12 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
                         logger.debug("Found column mapped to " + pi.getName() + " which is a list, reverse mapping...");
                         Map<String, String> values = getValuesForProperty(mappedClass, (ListClass) prop);
                         // find the value corresponding to the current value in the data map
-                        String value = data.get(xwikiField);
-                        logger.debug("Value to reverse map: " + value);
-                        if (StringUtils.isNotEmpty(value)) {
+                        String dataInFile = data.get(xwikiField);
+                        logger.debug("Value to reverse map: " + dataInFile);
+                        if (StringUtils.isNotEmpty(dataInFile)) {
                             // split with separator
                             List<String> dataToStore = new ArrayList<>();
-                            for (String v : StringUtils.split(value, config.getListSeparator())) {
+                            for (String v : StringUtils.split(dataInFile, config.getListSeparator())) {
                                 String valueToAdd = lookupKey(values, v, prop);
 
                                 if (StringUtils.isNotBlank(valueToAdd)) {
