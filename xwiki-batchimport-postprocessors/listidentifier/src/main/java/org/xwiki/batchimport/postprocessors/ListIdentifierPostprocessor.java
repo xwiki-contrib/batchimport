@@ -143,8 +143,9 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
         if (StringUtils.isBlank(key) && prop instanceof StaticListClass) {
             // For static lists, case insensitive trimmed value retrieval is attempted
             // if no key is found for the value as is.
+            String trimmedValue = value.trim();
             for (Map.Entry<String, String> entry : keyByValueMap.entrySet()) {
-                if (entry.getKey().trim().compareToIgnoreCase(value.trim()) == 0) {
+                if (entry.getKey().trim().compareToIgnoreCase(trimmedValue) == 0) {
                     key = entry.getValue();
                 }
             }
