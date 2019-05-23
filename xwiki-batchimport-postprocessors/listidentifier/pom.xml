@@ -29,6 +29,7 @@
     </parent>
     <artifactId>xwiki-batchimport-postprocessors-listidentifier</artifactId>
     <name>Batch import list identifier post-processor</name>
+    <description>Allows to dynamically convert list values to list property keys during a batch import operation.</description>
     <packaging>jar</packaging>
     <properties>
       <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>

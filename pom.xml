@@ -47,6 +47,10 @@
       <id>LudovicDubost</id>
       <name>Ludovic Dubost</name>
     </developer>
+    <developer>
+      <id>slauriere</id>
+      <name>slauriere</name>
+    </developer>
   </developers>
   <scm>
     <connection>scm:git:git://github.com/xwiki-contrib/batchimport.git</connection>
