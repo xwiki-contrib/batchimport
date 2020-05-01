@@ -36,6 +36,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.localization.ContextualLocalizationManager;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -67,6 +68,9 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
     @Inject
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
+
+    @Inject
+    private  ContextualLocalizationManager localization;
 
     /**
      * Store values cache, for each list to map.
@@ -172,11 +176,48 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
         }
     }
 
-    private Map<String, String> buildCacheForProperty(BaseClass className, ListClass property)
+    private String localizePlain(String key, Object... parameters)
+    {
+        return localization.getTranslationPlain(key, parameters);
+    }
+
+    private String getDisplayValue(String value, String name, Map<String, ListItem> map, String className,
+        XWikiContext context)
+    {
+        ListItem item = map.get(value);
+        String displayValue;
+        if (item == null) {
+            displayValue = value;
+        } else {
+            displayValue = item.getValue();
+        }
+        if ((context == null) || (context.getWiki() == null)) {
+            return displayValue;
+        }
+        String msgname = className + "_" + name + "_"  + value;
+        String newresult = localizePlain(msgname);
+        if (newresult == null) {
+            msgname = "option_" + name + "_" + value;
+            newresult = localizePlain(msgname);
+            if (newresult == null) {
+                msgname = "option_" + value;
+                newresult = localizePlain(msgname);
+                if (newresult == null) {
+                    newresult = displayValue;
+                }
+            }
+        }
+        return newresult;
+    }
+
+    private Map<String, String> buildCacheForProperty(BaseClass xClass, ListClass property)
     {
         Map<String, String> mapResult = new HashMap<String, String>();
-        for (Map.Entry<String, ListItem> me : property.getMap(this.xwikiContextProvider.get()).entrySet()) {
+        Map<String, ListItem> valuesMap = property.getMap(this.xwikiContextProvider.get());
+        for (Map.Entry<String, ListItem> me : valuesMap.entrySet()) {
             String displayValue = me.getValue().getValue();
+            // We need to get the proper translation if any for this value
+            displayValue = getDisplayValue(me.getKey(), property.getName(), valuesMap, xClass.getName(), this.xwikiContextProvider.get());
             String existingValue = mapResult.get(displayValue);
             if (existingValue == null) {
                 mapResult.put(displayValue, me.getKey());
