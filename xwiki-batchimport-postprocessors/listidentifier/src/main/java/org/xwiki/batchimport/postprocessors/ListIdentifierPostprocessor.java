@@ -99,7 +99,7 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
                     PropertyClass prop = (PropertyClass) pi;
                     if (prop instanceof ListClass) {
                         logger.debug("Found column mapped to " + pi.getName() + " which is a list, reverse mapping...");
-                        Map<String, String> values = getValuesForProperty(mappedClass, (ListClass) prop);
+                        Map<String, String> values = getValuesForProperty(classReference, (ListClass) prop);
                         // find the value corresponding to the current value in the data map
                         String dataInFile = data.get(xwikiField);
                         logger.debug("Value to reverse map: " + dataInFile);
@@ -165,12 +165,12 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
      * @param property the property to get values for
      * @return the map with properties
      */
-    private Map<String, String> getValuesForProperty(BaseClass xClass, ListClass prop)
+    private Map<String, String> getValuesForProperty(String className, ListClass prop)
     {
         if (this.valuesCache.get(prop.getName()) != null) {
             return this.valuesCache.get(prop.getName());
         } else {
-            Map<String, String> propValuesCache = this.buildCacheForProperty(xClass, prop);
+            Map<String, String> propValuesCache = this.buildCacheForProperty(className, prop);
             this.valuesCache.put(prop.getName(), propValuesCache);
             return propValuesCache;
         }
@@ -210,14 +210,15 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
         return newresult;
     }
 
-    private Map<String, String> buildCacheForProperty(BaseClass xClass, ListClass property)
+    private Map<String, String> buildCacheForProperty(String className, ListClass property)
     {
         Map<String, String> mapResult = new HashMap<String, String>();
         Map<String, ListItem> valuesMap = property.getMap(this.xwikiContextProvider.get());
         for (Map.Entry<String, ListItem> me : valuesMap.entrySet()) {
             String displayValue = me.getValue().getValue();
             // We need to get the proper translation if any for this value
-            displayValue = getDisplayValue(me.getKey(), property.getName(), valuesMap, xClass.getName(), this.xwikiContextProvider.get());
+            displayValue =
+                getDisplayValue(me.getKey(), property.getName(), valuesMap, className, this.xwikiContextProvider.get());
             String existingValue = mapResult.get(displayValue);
             if (existingValue == null) {
                 mapResult.put(displayValue, me.getKey());
