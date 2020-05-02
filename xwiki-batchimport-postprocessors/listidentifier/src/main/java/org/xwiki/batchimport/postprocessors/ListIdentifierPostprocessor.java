@@ -35,8 +35,8 @@ import org.xwiki.batchimport.RowDataPostprocessor;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
-import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.localization.ContextualLocalizationManager;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -70,7 +70,7 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
     private DocumentReferenceResolver<String> resolver;
 
     @Inject
-    private  ContextualLocalizationManager localization;
+    private ContextualLocalizationManager localization;
 
     /**
      * Store values cache, for each list to map.
@@ -194,7 +194,7 @@ public class ListIdentifierPostprocessor implements RowDataPostprocessor
         if ((context == null) || (context.getWiki() == null)) {
             return displayValue;
         }
-        String msgname = className + "_" + name + "_"  + value;
+        String msgname = className + "_" + name + "_" + value;
         String newresult = localizePlain(msgname);
         if (newresult == null) {
             msgname = "option_" + name + "_" + value;
