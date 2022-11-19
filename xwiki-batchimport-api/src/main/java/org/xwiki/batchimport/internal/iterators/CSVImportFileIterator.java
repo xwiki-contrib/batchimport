@@ -37,6 +37,7 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.AttachmentReference;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.ICSVParser;
 import com.opencsv.RFC4180ParserBuilder;
 import com.xpn.xwiki.XWikiContext;
@@ -83,7 +84,7 @@ public class CSVImportFileIterator implements ImportFileIterator
         InputStreamReader sourceInputStream = getSourceInputStream(config, getXWikiContext());
         ICSVParser csvParser = new RFC4180ParserBuilder().withQuoteChar(config.getCsvTextDelimiter())
             .withSeparator(config.getCsvSeparator()).build();
-        this.reader = new CSVReader(sourceInputStream, 0, csvParser);
+        this.reader = new CSVReaderBuilder(sourceInputStream).withSkipLines(0).withCSVParser(csvParser).build();
     }
 
     @Override
