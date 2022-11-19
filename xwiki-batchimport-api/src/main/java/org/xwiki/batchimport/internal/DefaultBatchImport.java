@@ -29,6 +29,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -553,6 +554,10 @@ public class DefaultBatchImport implements BatchImport
         }
     }
 
+    /**
+     * This method is preserved only because it's public, but it's not used anymore by the importer since 2.4.
+     */
+    @Deprecated
     public String getFileName(String filename)
     {
         if (filename.startsWith("./")) {
@@ -572,26 +577,59 @@ public class DefaultBatchImport implements BatchImport
         }
     }
 
+    /**
+     * Signature preserved only because the method is public, use the method  below.
+     */
     @SuppressWarnings("deprecation")
+    @Deprecated
     public void addFiles(Document newDoc, String path) throws IOException
+    {
+        addFiles(newDoc, path, true);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void addFiles(Document newDoc, String path, boolean clearName) throws IOException
     {
         File dirFile = new File(path);
         for (File file : dirFile.listFiles()) {
             debug("Adding file " + file.getName());
             byte[] filedata = FileUtils.readFileToByteArray(file);
-            addFile(newDoc, filedata, file.getName());
+            addFile(newDoc, filedata, file.getName(), clearName);
         }
     }
 
     @SuppressWarnings("deprecation")
+    public void addFiles(Document newDoc, Collection<String> paths, boolean clearName) throws IOException
+    {
+        for (String filePath : paths) {
+            File file = new File(filePath);
+            debug("Adding file " + file.getName());
+            byte[] filedata = FileUtils.readFileToByteArray(file);
+            addFile(newDoc, filedata, file.getName(), clearName);
+        }
+    }
+
+    /**
+     * Signature preserved only because the method is public, use the method  below.
+     */
+    @SuppressWarnings("deprecation")
+    @Deprecated
     public void addFile(Document newDoc, byte[] filedata, String filename)
+    {
+        addFile(newDoc, filedata, filename, true);
+    }
+
+    @SuppressWarnings("deprecation")
+    public void addFile(Document newDoc, byte[] filedata, String filename, boolean clearName)
     {
         try {
             if (filename.startsWith("./")) {
                 filename = filename.substring(2);
             }
             XWikiContext xcontext = getXWikiContext();
-            filename = xcontext.getWiki().clearName(filename, false, true, xcontext);
+            if (clearName) {
+                filename = xcontext.getWiki().clearName(filename, false, true, xcontext);
+            }
 
             if (newDoc.getAttachment(filename) != null) {
                 debug("Filename " + filename + " already exists in " + newDoc.getPrefixedFullName() + ".");
@@ -1115,6 +1153,10 @@ public class DefaultBatchImport implements BatchImport
                         parsedValue = null;
                     }
                 }
+                if (fieldName.equals("doc.file")) {
+                    // we don't really validate much more (although we could try), we just parse as list
+                    parsedValue = getAsList(value, config.getListSeparator());
+                }
                 // TODO: check doc.tags (but I don't know exactly how). For now, doc.tags is not even collected in the
                 // data map, so we cannot check it here
             } else {
@@ -1448,32 +1490,77 @@ public class DefaultBatchImport implements BatchImport
     {
         String fullName = newDoc.getPrefixedFullName();
 
+        // get a couple of settings about the import here - we should get them in the caller function, but I don't want
+        // to change the signature of the function.
+        boolean attachmentMappingIsList = Boolean.parseBoolean("" + config.get("docfileislist"));
+        boolean clearAttachmentNames = true;
+        if (config.get("clearfilenames") != null && !"".equals(config.get("clearfilenames"))) {
+            clearAttachmentNames = Boolean.parseBoolean("" + config.get("clearfilenames"));
+        }
+
         boolean withFile = false;
-        boolean fileOk = false;
-        String path = "";
+        String mappedFileValue = "";
 
         // if there is a mapping for the doc.file field
         String fileMapping = config.getFieldsMapping().get("doc.file");
         if (fileMapping != null) {
-            withFile = true;
-            path = getFilePath(datadir, datadirprefix, data.get("doc.file"));
-            fileOk = checkFile(zipfile, path);
+            mappedFileValue = data.get("doc.file");
+            if (StringUtils.isNotEmpty(mappedFileValue)) {
+                withFile = true;
+            }
         }
 
         if (withFile) {
+            // fileOk will be OK only if all attachments mapped are fine.
+            // We use this logic so that we don't silently ignore some attachment that should be there and it's not.
+            // If a value needs to be ignored, it should be fixed in the source file.
+            boolean fileOk = false;
+            // all paths of files to import, mapped by file name
+            Map<String, String> paths = new HashMap<>();
+            if (attachmentMappingIsList) {
+                // get all file names mapped, as a list, and check each of them and collect only the ones that exist in
+                // the configured file directory
+                List<String> filesNames = getAsList(mappedFileValue, config.getListSeparator());
+                // ALL FILES mapped should be OK for this to work, and there should be at least one file to import
+                fileOk = filesNames.size() > 0;
+                for (String fileName : filesNames) {
+                    String filePath = getFilePath(datadir, datadirprefix, fileName);
+                    if (checkFile(zipfile, filePath)) {
+                        String fname = new File(filePath).getName();
+                        paths.put(fname, filePath);
+                    } else {
+                        fileOk = fileOk && false;
+                    }
+                }
+            } else {
+                // use the single mapped file value as a single path
+                String filePath = getFilePath(datadir, datadirprefix, mappedFileValue);
+                if (checkFile(zipfile, filePath)) {
+                    String fname = new File(filePath).getName();
+                    paths.put(fname, filePath);
+                    fileOk = true;
+                }
+            }
+            // start importing the prepared list of paths
             if (fileOk) {
                 debug("Ready to import row " + currentLine.toString() + "in page " + fullName
-                    + " and imported file is ok.");
+                    + " and at least one imported file is ok.");
 
                 // if we're simulating we don't actually import the file, we only pretend
                 if (simulation) {
-                    log.logSave("simimportfileok", rowIndex, currentLine, fullName, path);
+                    log.logSave("simimportfileok", rowIndex, currentLine, fullName, paths.values());
                     savedDocuments.add(newDoc.getDocumentReference());
                 } else {
-                    String fname = getFileName(data.get("doc.file"));
+                    Boolean attachmentsExist = true;
+                    for(String fname : paths.keySet()) {
+                        if (newDoc.getAttachment(fname) == null) {
+                            attachmentsExist = false;
+                            break;
+                        }
+                    }
                     // adding the file to the document only if fileupload is true
-                    if (fileupload && newDoc.getAttachment(fname) != null) {
-                        debug("Filename " + fname + " already exists in " + fullName);
+                    if (fileupload && attachmentsExist) {
+                        debug("All files from " + paths.keySet() + " already exist in " + fullName);
 
                         // done here
                         // FIXME: this should depend on the overwrite file parameter or at least on the overwrite
@@ -1481,21 +1568,30 @@ public class DefaultBatchImport implements BatchImport
                         // there are files attached)
                         newDoc.save();
                         savedDocuments.add(newDoc.getDocumentReference());
-                        log.logSave("importduplicateattach", rowIndex, currentLine, fullName, path);
+                        log.logSave("importduplicateattach", rowIndex, currentLine, fullName, paths.values());
                     } else {
-                        boolean isDirectory = isDirectory(zipfile, path);
-                        if (fileupload && isDirectory) {
-                            addFiles(newDoc, path);
+                        // we're file uploading and we either have multiple values to upload or a single one and that
+                        // one is a directory
+                        if (fileupload && (paths.size() > 1
+                            || (paths.size() == 1 && isDirectory(zipfile, paths.values().iterator().next())))) {
+                            if (paths.size() == 1) {
+                                addFiles(newDoc, paths.values().iterator().next(), clearAttachmentNames);
+                            } else {
+                                addFiles(newDoc, paths.values(), clearAttachmentNames);
+                            }
 
                             // done here, we save pointed files in the file and we're done
                             newDoc.save();
                             savedDocuments.add(newDoc.getDocumentReference());
-                            log.logSave("importfiledir", rowIndex, currentLine, fullName, path);
+                            log.logSave("importfiledir", rowIndex, currentLine, fullName, paths.values());
                         } else {
+                            // there is a single path to upload and that path is not a directory
+                            String fname = paths.keySet().iterator().next();
+                            String path = paths.values().iterator().next();
                             byte[] filedata = getFileData(zipfile, path);
                             if (filedata != null) {
                                 if (fileupload) {
-                                    addFile(newDoc, filedata, fname);
+                                    addFile(newDoc, filedata, fname, clearAttachmentNames);
                                 }
                                 // TODO: why the hell are we doing this here?
                                 if (overwrite && overwritefile) {
@@ -1554,7 +1650,7 @@ public class DefaultBatchImport implements BatchImport
                     }
                 }
             } else {
-                log.logError("errornofile", rowIndex, currentLine, fullName, path);
+                log.logError("errornofile", rowIndex, currentLine, fullName, mappedFileValue);
                 // TODO: this will leave the document unsaved because of the inexistent file, which impacts the data set
                 // with the marshalDataToDocumentObjects function (because of the way doImport is written), so maybe
                 // this should be configured by an error handling setting (skip row or skip value, for example), the
