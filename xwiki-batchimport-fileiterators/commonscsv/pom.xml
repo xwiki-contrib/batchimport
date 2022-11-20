@@ -24,44 +24,28 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.xwiki.contrib</groupId>
-    <artifactId>parent-platform</artifactId>
-    <version>8.4-10</version>
+    <artifactId>xwiki-batchimport-fileiterators</artifactId>
+    <version>2.4-SNAPSHOT</version>
   </parent>
-  <groupId>org.xwiki.contrib</groupId>
-  <artifactId>xwiki-batchimport</artifactId>
-  <name>Batch Import Parent POM</name>
-  <packaging>pom</packaging>
-  <version>2.4-SNAPSHOT</version>
-
+  <artifactId>xwiki-batchimport-fileiterators-commonscsv</artifactId>
+  <name>Batch import Commons CSV File Iterator</name>
+  <packaging>jar</packaging>
+  
   <properties>
-    <xwiki.release.jira.skip>false</xwiki.release.jira.skip>
-    <xwiki.issueManagement.jira.id>BATCHIMP</xwiki.issueManagement.jira.id>
+    <xwiki.checkstyle.skip>true</xwiki.checkstyle.skip>
   </properties>
 
-  <developers>
-    <developer>
-      <id>lucaa</id>
-      <name>Anca Paula Luca</name>
-    </developer>
-    <developer>
-      <id>LudovicDubost</id>
-      <name>Ludovic Dubost</name>
-    </developer>
-    <developer>
-      <id>slauriere</id>
-      <name>slauriere</name>
-    </developer>
-  </developers>
-  <scm>
-    <connection>scm:git:git://github.com/xwiki-contrib/batchimport.git</connection>
-    <developerConnection>scm:git:git@github.com:xwiki-contrib/batchimport.git</developerConnection>
-    <url>https://github.com/xwiki-contrib/batchimport/tree/master</url>
-    <tag>HEAD</tag>
-  </scm>
-  <modules>
-    <module>xwiki-batchimport-api</module>
-    <module>xwiki-batchimport-application</module>
-    <module>xwiki-batchimport-postprocessors</module>
-    <module>xwiki-batchimport-fileiterators</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-oldcore</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <!-- The version of XWiki 11.3.7, so this will be compatible with version >= 11.3.7 -->
+      <version>1.6</version>
+    </dependency>
+  </dependencies>
 </project>
