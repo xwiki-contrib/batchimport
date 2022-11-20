@@ -67,7 +67,7 @@
   #if ($lastDot &gt; 0)$filename.substring($lastDot)#end
 #end
 
-#macro(displayDefaultButtons $previousStep $currentStep $nextStep)
+#macro(displayDefaultButtons $previousStep $currentStep $nextStep $nextNextStep)
   ## display the current step in hidden so that we know when to save the data in the class
   &lt;input type="hidden" name="referringstep" value="$currentStep" /&gt;
   &lt;div class="buttonwrapper"&gt;
@@ -76,6 +76,9 @@
     #end  
     #if ("$!nextStep" != "")
       &lt;input type="submit" value="$escapetool.xml($services.localization.render("batchimport.import.${currentStep}.next"))" name="step_${nextStep}" class="button next" /&gt;  
+    #end
+    #if ("$!nextNextStep" != "")
+      &lt;input type="submit" value="$escapetool.xml($services.localization.render("batchimport.import.${nextStep}.next"))" name="step_${nextNextStep}" class="button next" /&gt;  
     #end
   &lt;/div&gt;  
 #end
@@ -403,7 +406,7 @@
     &lt;/ul&gt;
 
     #printBatchImportNonDefaultOptions($importconfig)
-    #displayDefaultButtons("preview", "overwrite", "importsimulation")
+    #displayDefaultButtons("preview", "overwrite", "importsimulation", "import")
     &lt;/form&gt;
   {{/html}}
 #end
