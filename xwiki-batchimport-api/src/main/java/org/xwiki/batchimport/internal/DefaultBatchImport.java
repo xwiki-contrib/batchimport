@@ -21,6 +21,7 @@ package org.xwiki.batchimport.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -46,8 +47,6 @@ import java.util.zip.ZipFile;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -593,7 +592,7 @@ public class DefaultBatchImport implements BatchImport
         File dirFile = new File(path);
         for (File file : dirFile.listFiles()) {
             debug("Adding file " + file.getName());
-            byte[] filedata = FileUtils.readFileToByteArray(file);
+            InputStream filedata = new FileInputStream(file.getPath());
             addFile(newDoc, filedata, file.getName(), clearName);
         }
     }
@@ -604,7 +603,7 @@ public class DefaultBatchImport implements BatchImport
         for (String filePath : paths) {
             File file = new File(filePath);
             debug("Adding file " + file.getName());
-            byte[] filedata = FileUtils.readFileToByteArray(file);
+            InputStream filedata = new FileInputStream(file.getPath());
             addFile(newDoc, filedata, file.getName(), clearName);
         }
     }
@@ -616,11 +615,11 @@ public class DefaultBatchImport implements BatchImport
     @Deprecated
     public void addFile(Document newDoc, byte[] filedata, String filename)
     {
-        addFile(newDoc, filedata, filename, true);
+        addFile(newDoc, new ByteArrayInputStream(filedata), filename, true);
     }
 
     @SuppressWarnings("deprecation")
-    public void addFile(Document newDoc, byte[] filedata, String filename, boolean clearName)
+    public void addFile(Document newDoc, InputStream filedata, String filename, boolean clearName)
     {
         try {
             if (filename.startsWith("./")) {
@@ -654,21 +653,17 @@ public class DefaultBatchImport implements BatchImport
     }
 
     @SuppressWarnings("deprecation")
-    public byte[] getFileData(ZipFile zipfile, String path) throws ZipException, IOException
+    public InputStream getFileData(ZipFile zipfile, String path) throws ZipException, IOException
     {
         if (zipfile == null) {
-            return FileUtils.readFileToByteArray(new File(path));
+            return new FileInputStream(path);
         } else {
             String newpath = path;
             ZipEntry zipentry = zipfile.getEntry(newpath);
             if (zipentry == null) {
                 return null;
             }
-            InputStream is = zipfile.getInputStream(zipentry);
-            if (is == null) {
-                return null;
-            }
-            return IOUtils.toByteArray(is);
+            return zipfile.getInputStream(zipentry);
         }
     }
 
@@ -1588,7 +1583,7 @@ public class DefaultBatchImport implements BatchImport
                             // there is a single path to upload and that path is not a directory
                             String fname = paths.keySet().iterator().next();
                             String path = paths.values().iterator().next();
-                            byte[] filedata = getFileData(zipfile, path);
+                            InputStream filedata = getFileData(zipfile, path);
                             if (filedata != null) {
                                 if (fileupload) {
                                     addFile(newDoc, filedata, fname, clearAttachmentNames);
@@ -1611,9 +1606,8 @@ public class DefaultBatchImport implements BatchImport
                                         try {
                                             OfficeImporterScriptService officeImporter = this.cm.getInstance(ScriptService.class, "officeimporter");
                                             // import the attachment in the content of the document
-                                            InputStream fileInputStream = new ByteArrayInputStream(filedata);
                                             XDOMOfficeDocument xdomOfficeDoc =
-                                                officeImporter.officeToXDOM(fileInputStream, fname, fullName, filterstyles);
+                                                officeImporter.officeToXDOM(filedata, fname, fullName, filterstyles);
                                             importResult =
                                                 officeImporter.save(xdomOfficeDoc, fullName, newDoc.getSyntax()
                                                     .toIdString(), null, null, true);
