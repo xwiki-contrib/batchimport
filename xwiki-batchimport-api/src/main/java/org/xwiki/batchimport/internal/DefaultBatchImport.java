@@ -640,13 +640,12 @@ public class DefaultBatchImport implements BatchImport
             // WARNING: this will work only if the performer of the import has programming rights.
             XWikiDocument protectedDocument = newDoc.getDocument();
             XWikiAttachment attachment = new XWikiAttachment();
-            protectedDocument.getAttachmentList().add(attachment);
             attachment.setContent(filedata);
             attachment.setFilename(filename);
             attachment.setAuthor(xcontext.getUser());
             // Add the attachment to the document
             attachment.setDoc(protectedDocument);
-            protectedDocument.saveAttachmentContent(attachment, xcontext);
+            protectedDocument.getAttachmentList().add(attachment);
         } catch (Throwable e) {
             debug("Filename " + filename + " could not be attached because of Exception: " + e.getMessage());
         }
