@@ -51,6 +51,10 @@
       <id>slauriere</id>
       <name>slauriere</name>
     </developer>
+    <developer>
+      <id>Mohamed Boussaa</id>
+      <name>mouhb</name>
+    </developer>
   </developers>
   <scm>
     <connection>scm:git:git://github.com/xwiki-contrib/batchimport.git</connection>
