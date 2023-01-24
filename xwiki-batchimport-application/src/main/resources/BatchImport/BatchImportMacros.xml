@@ -106,6 +106,9 @@
   #if ($config.clearName)
     &lt;input type="hidden" name="batchimportclearname" value="true" /&gt;
   #end
+  #if ($config.clearFileNames)
+    &lt;input type="hidden" name="batchimportclearfilenames" value="true" /&gt;
+  #end
   #if ($config.honorEmptyValues)
     &lt;input type="hidden" name="batchimporthonoremptyvalues" value="true" /&gt;
   #end
@@ -174,6 +177,16 @@
         #set($clearNameValue = 1)
       #end
       #set($discard = $presetsObject.set('clearname', $clearNameValue))
+      #set($madeChanges = true)
+    #end
+    ## save the clear file names option only if not matching
+    ## true if empty, for backwards compatibility
+    #if (($importconfig.clearFileNames &amp;&amp; $presetsObject.getProperty('clearfilenames').value != 1) || (!$importconfig.clearFileNames &amp;&amp; ($presetsObject.getProperty('clearfilenames').value == 1 || "$!presetsObject.getProperty('clearfilenames').value" == '')))
+      #set($clearFileNamesValue = 0)
+      #if ($importconfig.clearFileNames)
+        #set($clearFileNamesValue = 1)
+      #end
+      #set($discard = $presetsObject.set('clearfilenames', $clearFileNamesValue))
       #set($madeChanges = true)
     #end
     ## save the honor empty values option only if not matching
@@ -294,6 +307,10 @@
         {{info}}$services.localization.render('batchimport.import.mapping.clearname.description'){{/info}}
 
         $services.localization.render('batchimport.import.mapping.clearname'): &lt;input type="checkbox" name="batchimportclearname" value="true" #if($importconfig.clearName)checked="checked" #end /&gt;&lt;input type="hidden" name="batchimportclearname" value="false" /&gt;
+
+        {{info}}$services.localization.render('batchimport.import.mapping.clearfilenames.description'){{/info}}
+
+        $services.localization.render('batchimport.import.mapping.clearfilenames'): &lt;input type="checkbox" name="batchimportclearfilenames" value="true" #if($importconfig.clearFileNames)checked="checked" #end /&gt;&lt;input type="hidden" name="batchimportclearfilenames" value="false" /&gt;
 
         {{info}}$services.localization.render('batchimport.import.mapping.localelanguage.description'){{/info}}
 

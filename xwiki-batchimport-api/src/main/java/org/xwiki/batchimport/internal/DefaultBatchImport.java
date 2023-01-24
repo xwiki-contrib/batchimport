@@ -1496,10 +1496,7 @@ public class DefaultBatchImport implements BatchImport
         // get a couple of settings about the import here - we should get them in the caller function, but I don't want
         // to change the signature of the function.
         boolean attachmentMappingIsList = Boolean.parseBoolean("" + config.get("docfileislist"));
-        boolean clearAttachmentNames = true;
-        if (config.get("clearfilenames") != null && !"".equals(config.get("clearfilenames"))) {
-            clearAttachmentNames = Boolean.parseBoolean("" + config.get("clearfilenames"));
-        }
+        boolean clearAttachmentNames = config.getClearFileNames();
 
         boolean withFile = false;
         String mappedFileValue = "";

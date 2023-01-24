@@ -440,6 +440,28 @@ public class BatchImportConfiguration extends HashMap<Object, Object>
     }
 
     /**
+     * @return whether names of attachments read from source file (doc.file) should be passed through clearName before
+     *         being used. True by default, for backwards compatibility.
+     * @since 2.5
+     */
+    public boolean getClearFileNames()
+    {
+        Boolean clearFileNames = (Boolean) this.get("clearfilenames");
+
+        return clearFileNames == null ? true : clearFileNames;
+    }
+
+    /**
+     * @param clearFileNames whether names of attachments read from source file (doc.file) should be passed through
+     *            clearName before being used. True by default, for backwards compatibility.
+     * @since 2.5
+     */
+    public void setClearFileNames(boolean clearFileNames)
+    {
+        this.put("clearfilenames", clearFileNames);
+    }
+
+    /**
      * @return How should new data be compared to data existing in the wiki, based on doc.name.
      */
     public Overwrite getOverwrite()

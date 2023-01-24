@@ -64,6 +64,20 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </classname>
+    <clearfilenames>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>radio</displayFormType>
+      <displayType>yesno</displayType>
+      <name>clearfilenames</name>
+      <number>16</number>
+      <prettyName>Clear file names</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </clearfilenames>
     <clearname>
       <customDisplay/>
       <defaultValue/>

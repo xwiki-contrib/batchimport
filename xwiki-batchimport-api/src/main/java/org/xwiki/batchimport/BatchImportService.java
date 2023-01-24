@@ -199,6 +199,11 @@ public class BatchImportService implements ScriptService, BatchImport
             config.setClearName(Boolean.valueOf(clearName));
         }
 
+        String clearFileNames = request.getParameter("batchimportclearfilenames");
+        if (!StringUtils.isEmpty(clearFileNames)) {
+            config.setClearFileNames(Boolean.valueOf(clearFileNames));
+        }
+
         String honorEmptyValues = request.getParameter("batchimporthonoremptyvalues");
         if (!StringUtils.isEmpty(honorEmptyValues)) {
             config.setHonorEmptyValues(Boolean.valueOf(honorEmptyValues));
@@ -295,6 +300,15 @@ public class BatchImportService implements ScriptService, BatchImport
             Integer clearNamesValue = clearNameProp != null ? (Integer) clearNameProp.getValue() : null;
             if (clearNamesValue != null) {
                 config.setClearName((clearNamesValue == 1));
+            }
+
+            Property clearFileNamesProp = configObject.getProperty("clearfilenames");
+            Integer clearFileNamesValue = clearFileNamesProp != null ? (Integer) clearFileNamesProp.getValue() : null;
+            // unset value means true, for backwards compatibility reasons.
+            if (clearFileNamesValue == null) {
+                config.setClearFileNames(true);
+            } else {
+                config.setClearFileNames((clearFileNamesValue == 1));
             }
 
             Property honorEmptyValuesProp = configObject.getProperty("honoremptyvalues");
