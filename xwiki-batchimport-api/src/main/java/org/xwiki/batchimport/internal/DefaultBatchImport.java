@@ -579,14 +579,12 @@ public class DefaultBatchImport implements BatchImport
     /**
      * Signature preserved only because the method is public, use the method  below.
      */
-    @SuppressWarnings("deprecation")
     @Deprecated
     public void addFiles(Document newDoc, String path) throws IOException
     {
         addFiles(newDoc, path, true);
     }
 
-    @SuppressWarnings("deprecation")
     public void addFiles(Document newDoc, String path, boolean clearName) throws IOException
     {
         File dirFile = new File(path);
@@ -597,7 +595,6 @@ public class DefaultBatchImport implements BatchImport
         }
     }
 
-    @SuppressWarnings("deprecation")
     public void addFiles(Document newDoc, Collection<String> paths, boolean clearName) throws IOException
     {
         for (String filePath : paths) {
@@ -611,7 +608,6 @@ public class DefaultBatchImport implements BatchImport
     /**
      * Signature preserved only because the method is public, use the method  below.
      */
-    @SuppressWarnings("deprecation")
     @Deprecated
     public void addFile(Document newDoc, byte[] filedata, String filename)
     {
@@ -651,7 +647,6 @@ public class DefaultBatchImport implements BatchImport
         }
     }
 
-    @SuppressWarnings("deprecation")
     public InputStream getFileData(ZipFile zipfile, String path) throws ZipException, IOException
     {
         if (zipfile == null) {
