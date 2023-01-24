@@ -590,8 +590,15 @@ public class DefaultBatchImport implements BatchImport
         File dirFile = new File(path);
         for (File file : dirFile.listFiles()) {
             debug("Adding file " + file.getName());
-            InputStream filedata = new FileInputStream(file.getPath());
-            addFile(newDoc, filedata, file.getName(), clearName);
+            InputStream filedata = null;
+            try {
+                filedata = new FileInputStream(file.getPath());
+                addFile(newDoc, filedata, file.getName(), clearName);
+            } finally {
+                if (filedata != null) {
+                    filedata.close();
+                }
+            }
         }
     }
 
@@ -600,8 +607,15 @@ public class DefaultBatchImport implements BatchImport
         for (String filePath : paths) {
             File file = new File(filePath);
             debug("Adding file " + file.getName());
-            InputStream filedata = new FileInputStream(file.getPath());
-            addFile(newDoc, filedata, file.getName(), clearName);
+            InputStream filedata = null;
+            try {
+                filedata = new FileInputStream(file.getPath());
+                addFile(newDoc, filedata, file.getName(), clearName);
+            } finally {
+                if (filedata != null) {
+                    filedata.close();
+                }
+            }
         }
     }
 
@@ -1579,57 +1593,62 @@ public class DefaultBatchImport implements BatchImport
                             String path = paths.values().iterator().next();
                             InputStream filedata = getFileData(zipfile, path);
                             if (filedata != null) {
-                                if (fileupload) {
-                                    addFile(newDoc, filedata, fname, clearAttachmentNames);
-                                }
-                                // TODO: why the hell are we doing this here?
-                                if (overwrite && overwritefile) {
-                                    newDoc.setContent("");
-                                }
-
-                                // saving the document, in order to be able to do the import properly after
-                                newDoc.save();
-                                savedDocuments.add(newDoc.getDocumentReference());
-
-                                // launching the openoffice conversion
-                                if (fileimport) {
-                                    if (!fname.toLowerCase().endsWith(".pdf")
-                                        && (StringUtils.isEmpty(newDoc.getContent().trim()) || (overwrite && overwritefile))) {
-                                        boolean importResult = false;
-
-                                        try {
-                                            OfficeImporterScriptService officeImporter = this.cm.getInstance(ScriptService.class, "officeimporter");
-                                            // import the attachment in the content of the document
-                                            XDOMOfficeDocument xdomOfficeDoc =
-                                                officeImporter.officeToXDOM(filedata, fname, fullName, filterstyles);
-                                            importResult =
-                                                officeImporter.save(xdomOfficeDoc, fullName, newDoc.getSyntax()
-                                                    .toIdString(), null, null, true);
-                                        } catch (Exception e) {
-                                            LOGGER.warn("Failed to import content from office file " + fname
-                                                + " to document " + fullName, e);
-                                        }
-
-                                        if (!importResult) {
-                                            log.logSave("importofficefail", rowIndex, currentLine, fullName, path);
-                                        } else {
-                                            log.logSave("importoffice", rowIndex, currentLine, fullName, path);
-                                        }
-
-                                        // in case import was unsuccessful let's empty the content again
-                                        // to be able to detect it
-                                        Document newDoc2 =
-                                            xcontext.getWiki().getDocument(newDoc.getDocumentReference(), xcontext)
-                                                .newDocument(xcontext);
-                                        if (StringUtils.isEmpty(newDoc2.getContent().trim())) {
-                                            newDoc2.setContent("");
-                                            newDoc2.save();
-                                        }
-                                        // clean up open office temporary files
-                                        cleanUp();
+                                try {
+                                    if (fileupload) {
+                                        addFile(newDoc, filedata, fname, clearAttachmentNames);
                                     }
-                                } else {
-                                    log.logSave("importnooffice", rowIndex, currentLine, fullName, path);
+                                    // TODO: why the hell are we doing this here?
+                                    if (overwrite && overwritefile) {
+                                        newDoc.setContent("");
+                                    }
+
+                                    // saving the document, in order to be able to do the import properly after
+                                    newDoc.save();
+                                    savedDocuments.add(newDoc.getDocumentReference());
+
+                                    // launching the openoffice conversion
+                                    if (fileimport) {
+                                        if (!fname.toLowerCase().endsWith(".pdf")
+                                            && (StringUtils.isEmpty(newDoc.getContent().trim())
+                                                || (overwrite && overwritefile))) {
+                                            boolean importResult = false;
+
+                                            try {
+                                                OfficeImporterScriptService officeImporter =
+                                                    this.cm.getInstance(ScriptService.class, "officeimporter");
+                                                // import the attachment in the content of the document
+                                                XDOMOfficeDocument xdomOfficeDoc = officeImporter.officeToXDOM(filedata,
+                                                    fname, fullName, filterstyles);
+                                                importResult = importResult = officeImporter.save(xdomOfficeDoc,
+                                                    fullName, newDoc.getSyntax().toIdString(), null, null, true);
+                                            } catch (Exception e) {
+                                                LOGGER.warn("Failed to import content from office file " + fname
+                                                    + " to document " + fullName, e);
+                                            }
+
+                                            if (!importResult) {
+                                                log.logSave("importofficefail", rowIndex, currentLine, fullName, path);
+                                            } else {
+                                                log.logSave("importoffice", rowIndex, currentLine, fullName, path);
+                                            }
+
+                                            // in case import was unsuccessful let's empty the content again
+                                            // to be able to detect it
+                                            Document newDoc2 =
+                                                xcontext.getWiki().getDocument(newDoc.getDocumentReference(), xcontext)
+                                                    .newDocument(xcontext);
+                                            if (StringUtils.isEmpty(newDoc2.getContent().trim())) {
+                                                newDoc2.setContent("");
+                                                newDoc2.save();
+                                            }
+                                            // clean up open office temporary files
+                                            cleanUp();
+                                        }
+                                    } else {
+                                        log.logSave("importnooffice", rowIndex, currentLine, fullName, path);
+                                    }
+                                } finally {
+                                    filedata.close();
                                 }
                             } else {
                                 log.logSave("importcannotreadfile", rowIndex, currentLine, fullName, path);
