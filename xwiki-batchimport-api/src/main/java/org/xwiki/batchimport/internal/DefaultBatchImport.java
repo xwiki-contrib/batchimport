@@ -1617,6 +1617,9 @@ public class DefaultBatchImport implements BatchImport
                                                 OfficeImporterScriptService officeImporter =
                                                     this.cm.getInstance(ScriptService.class, "officeimporter");
                                                 // import the attachment in the content of the document
+                                                // re-create the filedata stream so that it's reset to the beginning
+                                                filedata.close();
+                                                filedata = getFileData(zipfile, path);
                                                 XDOMOfficeDocument xdomOfficeDoc = officeImporter.officeToXDOM(filedata,
                                                     fname, fullName, filterstyles);
                                                 importResult = importResult = officeImporter.save(xdomOfficeDoc,
