@@ -1618,9 +1618,10 @@ public class DefaultBatchImport implements BatchImport
                                                 filedata.close();
                                                 filedata = getFileData(zipfile, path);
                                                 XDOMOfficeDocument xdomOfficeDoc = officeImporter.officeToXDOM(filedata,
-                                                    fname, fullName, filterstyles);
-                                                importResult = importResult = officeImporter.save(xdomOfficeDoc,
-                                                    fullName, newDoc.getSyntax().toIdString(), null, null, true);
+                                                    fname, newDoc.getDocumentReference(), filterstyles);
+                                                importResult = importResult =
+                                                    officeImporter.save(xdomOfficeDoc, newDoc.getDocumentReference(),
+                                                        newDoc.getSyntax().toIdString(), null, null, true);
                                             } catch (Exception e) {
                                                 LOGGER.warn("Failed to import content from office file " + fname
                                                     + " to document " + fullName, e);
