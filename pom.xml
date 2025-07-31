@@ -25,9 +25,8 @@
   <parent>
     <groupId>org.xwiki.contrib</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>8.4-12</version>
+    <version>8.4-13</version>
   </parent>
-  <groupId>org.xwiki.contrib</groupId>
   <artifactId>xwiki-batchimport</artifactId>
   <name>Batch Import Parent POM</name>
   <packaging>pom</packaging>
@@ -56,34 +55,6 @@
       <name>mouhb</name>
     </developer>
   </developers>
-
-  <!-- Exclude commons-lang from the transitive dependencies to make sure we don't use it in the extension code -->
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-platform-oldcore</artifactId>
-        <version>${platform.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-platform-office-importer</artifactId>
-        <version>${platform.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <scm>
     <connection>scm:git:git://github.com/xwiki-contrib/batchimport.git</connection>
