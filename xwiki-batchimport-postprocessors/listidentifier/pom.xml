@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.xwiki.contrib</groupId>
         <artifactId>xwiki-batchimport-postprocessors</artifactId>
-        <version>2.7-SNAPSHOT</version>
+        <version>2.6.1</version>
     </parent>
     <artifactId>xwiki-batchimport-postprocessors-listidentifier</artifactId>
     <name>Batch import list identifier post-processor</name>
